@@ -1,0 +1,1 @@
+// Handles global React state
