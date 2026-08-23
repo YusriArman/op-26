@@ -3,10 +3,12 @@ import AdminNavbar from "./AdminNavbar";
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900">
+    <div className="flex min-h-screen flex-col bg-white text-black">
       <AdminNavbar />
 
-      <Outlet />
+      <main className="flex-1">
+        <Outlet />
+      </main>
     </div>
   );
 }

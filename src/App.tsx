@@ -5,6 +5,7 @@ import {
 } from "react-router-dom";
 
 import PublicLayout from "./components/public/PublicLayout";
+import AdminLayout from "./components/admin/AdminLayout";
 
 import Queue from "./pages/Home";
 import FAQ from "./pages/Faq";
@@ -20,33 +21,54 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Public Website */}
+        {/* =========================
+            Public Website
+        ========================== */}
+
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Queue />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/prizes" element={<Prizes />} />
         </Route>
 
-        {/* Admin Login */}
-        <Route path="/login" element={<Login />} />
 
-        {/* Admin routes - protected later */}
+        {/* =========================
+            Admin Login
+        ========================== */}
+
+        {/* No AdminNavbar on login */}
         <Route
-          path="/dashboard"
-          element={<Dashboard />}
+          path="/login"
+          element={<Login />}
         />
 
-        <Route
-          path="/registration"
-          element={<Registration />}
-        />
 
-        <Route
-          path="/binding"
-          element={<Binding />}
-        />
+        {/* =========================
+            Admin Website
+        ========================== */}
 
-        {/* 404 */}
+        <Route element={<AdminLayout />}>
+          <Route
+            path="/dashboard"
+            element={<Dashboard />}
+          />
+
+          <Route
+            path="/registration"
+            element={<Registration />}
+          />
+
+          <Route
+            path="/binding"
+            element={<Binding />}
+          />
+        </Route>
+
+
+        {/* =========================
+            404
+        ========================== */}
+
         <Route
           path="*"
           element={
