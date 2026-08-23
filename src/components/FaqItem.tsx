@@ -1,0 +1,43 @@
+import { useState } from "react";
+
+interface FAQItemProps {
+  question: string;
+  answer: string;
+}
+
+function FAQItem({
+  question,
+  answer,
+}: FAQItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-gray-200">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center justify-between px-4 py-3 text-left"
+      >
+        <span className="text-sm font-semibold">
+          {question}
+        </span>
+
+        <span
+          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-500 text-sm text-white transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        >
+          ↓
+        </span>
+      </button>
+
+      {isOpen && (
+        <div className="px-4 pb-4 text-xs leading-relaxed text-gray-700">
+          {answer}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default FAQItem;

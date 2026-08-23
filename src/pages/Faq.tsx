@@ -1,26 +1,58 @@
 import Header from "../components/Header";
+import FAQItem from "../components/FaqItem";
 
-function Faq() {
+interface FAQ {
+  question: string;
+  answer: string;
+}
+
+const faqItems: FAQ[] = [
+  {
+    question: "What is Lorem Ipsum?",
+    answer:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    question: "What is Lorem Ipsum?",
+    answer:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    question: "What is Lorem Ipsum?",
+    answer:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    question: "What is Lorem Ipsum?",
+    answer:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    question: "What is Lorem Ipsum?",
+    answer:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+];
+
+function FAQ() {
   return (
-    <>
+    <div className="mx-auto max-w-5xl px-6 py-8">
       <Header
-        title="FAQ Page"
-        description="Frequently asked questions."
+        title="Frequently Asked Questions"
+        align="center"
       />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-semibold">
-            This is the FAQ page
-          </h2>
-
-          <p className="mt-3 text-gray-600">
-            FAQ data will eventually come from Firebase.
-          </p>
-        </div>
-      </main>
-    </>
+      <div className="space-y-3">
+        {faqItems.map((faq, index) => (
+          <FAQItem
+            key={index}
+            question={faq.question}
+            answer={faq.answer}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
 
-export default Faq;
+export default FAQ;

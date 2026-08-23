@@ -1,22 +1,29 @@
 interface HeaderProps {
   title: string;
   description?: string;
+  align?: "left" | "center";
 }
 
-function Header({ title, description }: HeaderProps) {
+function Header({
+  title,
+  description,
+  align = "left",
+}: HeaderProps) {
   return (
-    <header className="border-b border-gray-200 bg-gray-50">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <h1 className="text-4xl font-bold tracking-tight">
-          {title}
-        </h1>
+    <header
+      className={`mx-auto max-w-6xl px-6 py-8 ${
+        align === "center" ? "text-center" : "text-left"
+      }`}
+    >
+      <h1 className="text-3xl font-medium tracking-tight">
+        {title}
+      </h1>
 
-        {description && (
-          <p className="mt-3 text-gray-600">
-            {description}
-          </p>
-        )}
-      </div>
+      {description && (
+        <p className="mt-2 text-sm text-gray-600">
+          {description}
+        </p>
+      )}
     </header>
   );
 }

@@ -1,25 +1,85 @@
 import Header from "../components/Header";
+import PrizeCard from "../components/PrizeCard";
+
+const merchandise = [
+  {
+    name: "Lexa's Acrylic Keychain",
+    price: "RM8",
+  },
+  {
+    name: "Kira's Acrylic Keychain",
+    price: "RM8",
+  },
+  {
+    name: "Elysia's Acrylic Keychain",
+    price: "RM8",
+  },
+  {
+    name: "Cyrus' Acrylic Keychain",
+    price: "RM8",
+  },
+  {
+    name: "Rolly Totebag",
+    price: "RM10",
+  },
+];
+
+const luckyDrawPrizes = [
+  {
+    name: "Lexa's Acrylic Keychain",
+  },
+  {
+    name: "Kira's Acrylic Keychain",
+  },
+  {
+    name: "Elysia's Acrylic Keychain",
+  },
+  {
+    name: "Cyrus' Acrylic Keychain",
+  },
+  {
+    name: "Rolly Totebag",
+  },
+];
 
 function Prizes() {
   return (
-    <>
-      <Header
-        title="Prizes Page"
-        description="Information about event prizes."
-      />
+    <div className="mx-auto max-w-5xl px-6 py-8">
+      {/* Merchandise */}
+      <section>
+        <Header
+          title="ELYSIUM MERCHANDISE"
+          align="center"
+        />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-          <h2 className="text-2xl font-semibold">
-            This is the Prizes page
-          </h2>
-
-          <p className="mt-3 text-gray-600">
-            Prize information will be displayed here.
-          </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          {merchandise.map((item) => (
+            <PrizeCard
+              key={item.name}
+              name={item.name}
+              price={item.price}
+            />
+          ))}
         </div>
-      </main>
-    </>
+      </section>
+
+      {/* Lucky Draw */}
+      <section className="mt-20">
+        <Header
+          title="ORIENTATION PARTY LUCKY DRAW PRIZES"
+          align="left"
+        />
+
+        <div className="flex flex-wrap justify-center gap-4">
+          {luckyDrawPrizes.map((item) => (
+            <PrizeCard
+              key={item.name}
+              name={item.name}
+            />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 
