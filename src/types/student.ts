@@ -33,3 +33,13 @@ export interface AttendedStudentRecord {
   full_name: string;
   email: string;
 }
+
+export interface CollectionSlot {
+  id: string;
+  venue: string;
+  slot_date: string;
+  start_time: string;
+  end_time: string;
+  max_capacity: number;
+  booked_count: number;
+}
