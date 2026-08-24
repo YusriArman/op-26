@@ -67,7 +67,7 @@ function Prizes() {
       <section className="mt-20">
         <Header
           title="ORIENTATION PARTY LUCKY DRAW PRIZES"
-          align="left"
+          align="center"
         />
 
         <div className="flex flex-wrap justify-center gap-4">
