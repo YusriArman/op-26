@@ -5,7 +5,6 @@ interface RawAttendedRow {
   student_id: string;
   ticket_id: string | null;
   full_name: string;
-  email: string;
   freshmen_directory: {
     taylors_email: string | null;
   } | null;
@@ -16,9 +15,9 @@ function normalize(row: RawAttendedRow): AttendedStudentRecord {
     student_id: row.student_id,
     ticket_id: row.ticket_id,
     full_name: row.full_name,
-    // Same rule as binding: prefer the institutional Taylor's email,
-    // fall back to students.email only if the directory join is missing.
-    email: row.freshmen_directory?.taylors_email ?? row.email,
+    // students.email does not exist in the live schema — email is only
+    // ever available via the freshmen_directory join.
+    email: row.freshmen_directory?.taylors_email ?? null,
   };
 }
 
@@ -28,7 +27,7 @@ export async function fetchAttendedStudents(
   let request = supabase
     .from("students")
     .select(
-      "student_id, ticket_id, full_name, email, freshmen_directory ( taylors_email )"
+      "student_id, ticket_id, full_name, freshmen_directory ( taylors_email )"
     )
     .eq("is_attended", true)
     .order("full_name", { ascending: true });
@@ -36,9 +35,6 @@ export async function fetchAttendedStudents(
   const trimmed = query?.trim();
 
   if (trimmed) {
-    // Strip characters that are syntactically meaningful to PostgREST's
-    // .or() filter string (commas, parens) so free-text search input
-    // can't break or hijack the query.
     const safe = trimmed.replace(/[,()]/g, "");
 
     request = request.or(
@@ -48,7 +44,7 @@ export async function fetchAttendedStudents(
 
   const { data, error } = await request;
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 
   return (data ?? []).map((row) =>
     normalize(row as unknown as RawAttendedRow)

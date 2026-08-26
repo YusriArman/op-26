@@ -19,71 +19,43 @@ function AttendedStudents() {
 
       try {
         const data = await fetchAttendedStudents(activeQuery);
-
-        if (!cancelled) {
-          setStudents(data);
-        }
+        if (!cancelled) setStudents(data);
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to load attended students."
-          );
+          setError(err instanceof Error ? err.message : "Failed to load attended students.");
         }
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
     load();
-
     return () => {
       cancelled = true;
     };
   }, [activeQuery]);
 
-  const handleSearch = (query: string) => {
-    setActiveQuery(query);
-  };
-
-  const handleClear = () => {
-    setActiveQuery("");
-  };
+  const handleSearch = (query: string) => setActiveQuery(query);
+  const handleClear = () => setActiveQuery("");
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-8">
 
-      {/* Header */}
-
       <div>
-        <h1 className="text-3xl font-semibold">
-          Attended Students
-        </h1>
-
-        <p className="mt-2 text-sm text-gray-500">
+        <h1 className="font-display text-3xl font-semibold text-white">Attended Students</h1>
+        <p className="mt-2 text-sm text-[#8592B4]">
           {loading
             ? "Loading..."
-            : `${students.length} student${
-                students.length === 1 ? "" : "s"
-              } checked in${activeQuery ? " matching your search" : ""}.`}
+            : `${students.length} student${students.length === 1 ? "" : "s"} checked in${
+                activeQuery ? " matching your search" : ""
+              }.`}
         </p>
       </div>
 
-
-      {/* Layout: search left, table right */}
-
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
 
-        {/* Search */}
-
-        <section className="h-fit rounded-xl border border-gray-200 bg-white p-5 shadow-sm lg:sticky lg:top-8">
-
-          <h2 className="text-sm font-semibold">
-            Search
-          </h2>
+        <section className="glass-card h-fit rounded-2xl p-5 lg:sticky lg:top-8">
+          <h2 className="text-sm font-semibold text-white">Search</h2>
 
           <div className="mt-4">
             <BindingSearch
@@ -97,51 +69,43 @@ function AttendedStudents() {
             <button
               type="button"
               onClick={handleClear}
-              className="mt-3 text-xs text-gray-500 underline transition hover:text-black"
+              className="mt-3 text-xs text-[#8592B4] underline transition hover:text-white"
             >
               Clear search
             </button>
           )}
-
         </section>
 
-
-        {/* Table */}
-
-        <section className="rounded-xl border border-gray-200 bg-white shadow-sm">
-
+        <section className="glass-card rounded-2xl">
           {error && (
-            <div className="border-b border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="border-b border-[#F87171]/20 bg-[#F87171]/10 px-4 py-3 text-sm text-[#F87171]">
               {error}
             </div>
           )}
 
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10 text-sm">
+              <thead className="bg-white/5">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
                     Student ID
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
                     Ticket ID
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
                     Name
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">
+                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
                     Email
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/5">
                 {loading && (
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-8 text-center text-sm text-gray-400"
-                    >
+                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
                       Loading...
                     </td>
                   </tr>
@@ -149,10 +113,7 @@ function AttendedStudents() {
 
                 {!loading && students.length === 0 && (
                   <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-8 text-center text-sm text-gray-400"
-                    >
+                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
                       No attended students found.
                     </td>
                   </tr>
@@ -161,27 +122,15 @@ function AttendedStudents() {
                 {!loading &&
                   students.map((student) => (
                     <tr key={student.student_id}>
-                      <td className="px-4 py-3 font-medium">
-                        {student.student_id}
-                      </td>
-
-                      <td className="px-4 py-3 text-gray-600">
-                        {student.ticket_id ?? "—"}
-                      </td>
-
-                      <td className="px-4 py-3">
-                        {student.full_name}
-                      </td>
-
-                      <td className="break-all px-4 py-3 text-gray-600">
-                        {student.email}
-                      </td>
+                      <td className="px-4 py-3 font-medium text-white">{student.student_id}</td>
+                      <td className="px-4 py-3 text-[#8592B4]">{student.ticket_id ?? "—"}</td>
+                      <td className="px-4 py-3 text-white">{student.full_name}</td>
+                      <td className="break-all px-4 py-3 text-[#8592B4]">{student.email ?? "—"}</td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </div>
-
         </section>
 
       </div>

@@ -12,40 +12,28 @@ function AdminNavbar() {
   }
 
   return (
-    <nav className="border-b border-gray-200 bg-white">
+    <nav className="glass-card sticky top-0 z-20 border-x-0 border-t-0">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
 
-        {/* Logo + Admin */}
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-3"
-        >
+        <Link to="/dashboard" className="flex items-center gap-3">
           <img
             src="/Elysium_Logo.jpg"
             alt="Elysium Logo"
-            className="h-8 w-8 object-contain"
+            className="h-8 w-8 rounded-md object-contain ring-1 ring-white/10"
           />
-
-          <span className="text-lg font-semibold">
+          <span className="font-display text-lg font-semibold tracking-tight text-white">
             ELYSIUM ADMIN
           </span>
         </Link>
 
-        {/* Navigation */}
         <div className="flex items-center gap-6">
-
           <NavDropdown
             label="Dashboard"
             mainTo="/dashboard"
-            items={[
-              { label: "Attended Students", to: "/attended" },
-            ]}
+            items={[{ label: "Attended Students", to: "/attended" }]}
           />
 
-          <Link
-            to="/registration"
-            className="text-gray-600 transition hover:text-black"
-          >
+          <Link to="/registration" className="text-sm text-[#8592B4] transition hover:text-white">
             Registration
           </Link>
 
@@ -59,20 +47,16 @@ function AdminNavbar() {
             ]}
           />
 
-          <Link
-            to="/database"
-            className="text-gray-600 transition hover:text-black"
-          >
+          <Link to="/database" className="text-sm text-[#8592B4] transition hover:text-white">
             Database
           </Link>
 
           <button
             onClick={handleLogout}
-            className="rounded-md bg-black px-4 py-2 text-sm text-white transition hover:bg-gray-800"
+            className="rounded-lg bg-[#4C7CFF] px-4 py-2 text-sm font-medium text-white shadow-[0_0_20px_rgba(76,124,255,0.35)] transition hover:bg-[#3D68E0]"
           >
             Logout
           </button>
-
         </div>
 
       </div>
