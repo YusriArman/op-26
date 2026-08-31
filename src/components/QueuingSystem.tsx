@@ -44,58 +44,57 @@ export default function QueueingSystem({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [result, setResult] = useState<RegistrationResult | null>(null);
 
-    // Load available timeslots when modal opens (only if not waitlisted)
+    // Load available timeslots on mount, since the parent now only mounts
+    // this component when the modal is actually open. There is no need to
+    // reset form fields here anymore — because the parent fully unmounts
+    // this component on close, every open is a fresh instance with pristine
+    // useState defaults already.
     useEffect(() => {
-        if (isOpen && !isWaitlistOnly) {
-            fetchAvailableSlots();
-        }
-        if (isOpen) {
-            // Reset form state on open
-            setStudentId('');
-            setFullName('');
-            setTaylorsEmail('');
-            setPersonalEmail('');
-            setSelectedSlotId(null);
-            setErrorMessage(null);
-            setResult(null);
-        }
-    }, [isOpen, isWaitlistOnly]);
+        if (isWaitlistOnly) return;
 
-    // Lock background scrolling when modal is open
+        let cancelled = false;
+
+        async function loadSlots() {
+            setLoadingSlots(true);
+
+            const { data, error } = await supabase
+                .from('collection_slots')
+                .select('*')
+                .order('slot_date', { ascending: true })
+                .order('start_time', { ascending: true });
+
+            if (cancelled) return;
+
+            if (error) {
+                console.error('Failed to load slots:', error.message);
+            } else if (data) {
+                const slotList = data as CollectionSlot[];
+                setSlots(slotList);
+                // Auto-select first available slot if none selected
+                const firstAvailable = slotList.find((s: CollectionSlot) => s.booked_count < s.max_capacity);
+                if (firstAvailable) {
+                    setSelectedSlotId(firstAvailable.id);
+                }
+            }
+
+            setLoadingSlots(false);
+        }
+
+        loadSlots();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [isWaitlistOnly]);
+
+    // Lock background scrolling while the modal is mounted
     useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
+        document.body.style.overflow = 'hidden';
 
-        // Cleanup when component unmounts
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, [isOpen]);
-
-    async function fetchAvailableSlots() {
-        setLoadingSlots(true);
-        const { data, error } = await supabase
-            .from('collection_slots')
-            .select('*')
-            .order('slot_date', { ascending: true })
-            .order('start_time', { ascending: true });
-
-        if (error) {
-            console.error('Failed to load slots:', error.message);
-        } else if (data) {
-            const slotList = data as CollectionSlot[];
-            setSlots(slotList);
-            // Auto-select first available slot if none selected
-            const firstAvailable = slotList.find((s: CollectionSlot) => s.booked_count < s.max_capacity);
-            if (firstAvailable) {
-                setSelectedSlotId(firstAvailable.id);
-            }
-        }
-        setLoadingSlots(false);
-    }
+    }, []);
 
     const formatTime = (timeStr: string) => {
         const [h, m] = timeStr.split(':');
@@ -189,8 +188,8 @@ export default function QueueingSystem({
 
             // Notify parent page to update live queue counters
             onSuccess();
-        } catch (err: any) {
-            setErrorMessage(err?.message || 'Unexpected network error.');
+        } catch (err: unknown) {
+            setErrorMessage(err instanceof Error ? err.message : 'Unexpected network error.');
         } finally {
             setSubmitting(false);
         }
@@ -214,7 +213,7 @@ export default function QueueingSystem({
                         <p className="text-xs text-gray-500 mt-1">
                             {isWaitlistOnly
                                 ? 'Main passes are full. Join waitlist for uncollected ticket drops.'
-                                : 'Taylor’s Orientation Party Freshman Registration'}
+                                : 'Taylor\u2019s Orientation Party Freshman Registration'}
                         </p>
                     </div>
                     <button
@@ -234,7 +233,7 @@ export default function QueueingSystem({
                         </div>
                         <h4 className="text-lg font-semibold text-gray-900">
                             {result.type === 'main'
-                                ? 'You’ve Secured a Pass!'
+                                ? 'You\u2019ve Secured a Pass!'
                                 : `Waitlist Position #${result.waitlistNumber}`}
                         </h4>
                         <p className="mt-2 text-sm text-gray-600 px-4">{result.message}</p>
@@ -260,7 +259,7 @@ export default function QueueingSystem({
 
                         <div className="mt-4 rounded-lg bg-gray-100 p-3 text-xs text-gray-600 text-left">
                             <p><strong>Student ID:</strong> {studentId.toUpperCase()}</p>
-                            <p><strong>Taylor’s Email:</strong> {taylorsEmail.toLowerCase()}</p>
+                            <p><strong>Taylor's Email:</strong> {taylorsEmail.toLowerCase()}</p>
                             <p><strong>Personal Email:</strong> {personalEmail.toLowerCase()}</p>
                         </div>
 

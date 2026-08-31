@@ -49,15 +49,39 @@ function Queue() {
   }, []);
 
   // Poll counts on load and every 10 seconds
-  useEffect(() => {
-    fetchLiveCounts();
+    useEffect(() => {
+      let cancelled = false;
 
-    const interval = setInterval(() => {
-      fetchLiveCounts();
-    }, 10000); // 10-second interval
+      async function poll() {
+        try {
+          const { data, error } = await supabase
+            .from('admin_overall_metrics')
+            .select('total_main_registered, total_waitlisted')
+            .single();
 
-    return () => clearInterval(interval);
-  }, [fetchLiveCounts]);
+          if (cancelled) return;
+
+          if (error) {
+            console.error('Error fetching live counts:', error.message);
+          } else if (data) {
+            setQueueCount(data.total_main_registered || 0);
+            setWaitingCount(data.total_waitlisted || 0);
+          }
+        } catch (err) {
+          if (!cancelled) console.error('Failed to poll metrics:', err);
+        } finally {
+          if (!cancelled) setLoadingStats(false);
+        }
+      }
+
+      poll();
+      const interval = setInterval(poll, 10000);
+
+      return () => {
+        cancelled = true;
+        clearInterval(interval);
+      };
+    }, []);
 
   // Video dismiss listeners
   useEffect(() => {
