@@ -115,7 +115,7 @@ function Queue() {
       >
         <video
           className="h-full w-full object-cover"
-          src="/Elysium Effect.mp4"
+          src="/Elysium Word.mp4"
           autoPlay
           muted
           playsInline

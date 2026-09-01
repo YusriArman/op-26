@@ -87,14 +87,16 @@ export default function QueueingSystem({
         };
     }, [isWaitlistOnly]);
 
-    // Lock background scrolling while the modal is mounted
+    // Lock background scrolling while the modal is open
     useEffect(() => {
+        if (!isOpen) return;
+
         document.body.style.overflow = 'hidden';
 
         return () => {
             document.body.style.overflow = 'unset';
         };
-    }, []);
+    }, [isOpen]);
 
     const formatTime = (timeStr: string) => {
         const [h, m] = timeStr.split(':');
