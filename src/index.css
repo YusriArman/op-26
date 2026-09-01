@@ -1,1 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+/* For ADMIN */
+.font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+ 
+/* Applied once, on the AdminLayout wrapper only */
+.bg-gradient-admin {
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(76, 124, 255, 0.16) 0%, rgba(76, 124, 255, 0) 60%),
+    linear-gradient(180deg, #05070d 0%, #0b1226 45%, #0a1020 100%);
+  background-attachment: fixed;
+  color: #EAF0FF;
+}
+ 
+/* Glass card used by all admin components */
+.glass-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+}
+ 
+/* Scoped scrollbar, only applies inside elements with this class */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}

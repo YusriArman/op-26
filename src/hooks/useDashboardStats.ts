@@ -11,6 +11,7 @@ interface DayStats {
 
 interface WaitlistStats {
   registered: number;
+  attended: number;
   capacity: number;
   available: number;
 }
@@ -44,7 +45,7 @@ const emptyStats: DashboardStats = {
   },
   day1: emptyDay,
   day2: emptyDay,
-  waitlist: { registered: 0, capacity: WAITLIST_CAPACITY, available: WAITLIST_CAPACITY },
+  waitlist: { registered: 0, attended: 0, capacity: WAITLIST_CAPACITY, available: WAITLIST_CAPACITY },
 };
 
 export function useDashboardStats() {
@@ -94,10 +95,20 @@ export function useDashboardStats() {
         };
       };
 
-      const mainRegistered = students.filter((s) => s.reg_type === "main").length;
-      const waitlisted = students.filter((s) => s.reg_type === "waitlist").length;
+      const mainStudents = students.filter((s) => s.reg_type === "main");
+      const waitlistStudents = students.filter((s) => s.reg_type === "waitlist");
+
+      const mainRegistered = mainStudents.length;
+      const waitlisted = waitlistStudents.length;
       const attended = students.filter((s) => s.is_attended).length;
-      const collected = students.filter((s) => s.ticket_status === "collected").length;
+
+      // "Available Slots" represents how many main-event seats remain
+      // based on who is physically checked in right now (is_attended),
+      // not how many tickets have merely been collected. Waitlist is
+      // excluded — it draws from its own separate 500-slot pool, not
+      // the main 1500-seat venue capacity.
+      const mainAttended = mainStudents.filter((s) => s.is_attended).length;
+      const waitlistAttended = waitlistStudents.filter((s) => s.is_attended).length;
 
       setStats({
         overall: {
@@ -105,12 +116,13 @@ export function useDashboardStats() {
           total_waitlisted: waitlisted,
           total_students_attended: attended,
           target_capacity: TARGET_CAPACITY,
-          open_dday_slots: Math.max(TARGET_CAPACITY - collected, 0),
+          open_dday_slots: Math.max(TARGET_CAPACITY - mainAttended, 0),
         },
         day1: aggregate("TGH"),
         day2: aggregate("LT1"),
         waitlist: {
           registered: waitlisted,
+          attended: waitlistAttended,
           capacity: WAITLIST_CAPACITY,
           available: Math.max(WAITLIST_CAPACITY - waitlisted, 0),
         },

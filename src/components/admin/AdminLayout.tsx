@@ -3,7 +3,7 @@ import AdminNavbar from "./AdminNavbar";
 
 function AdminLayout() {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-black">
+    <div className="bg-gradient-admin admin-scrollbar flex min-h-screen flex-col">
       <AdminNavbar />
 
       <main className="flex-1">

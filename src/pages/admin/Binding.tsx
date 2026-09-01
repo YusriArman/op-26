@@ -15,7 +15,7 @@ function Binding() {
       <>
         <Header title="Binding Dashboard" description="Select an event day or manage the waitlist." />
         <main className="mx-auto max-w-6xl px-6 py-12">
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
+          <div className="glass-card rounded-xl p-6 text-sm text-[#8592B4]">
             Failed to load dashboard stats: {error}
           </div>
         </main>
@@ -28,41 +28,41 @@ function Binding() {
       <Header title="Binding Dashboard" description="Select an event day or manage the waitlist." />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
-        <section className="mb-8 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="glass-card mb-8 rounded-2xl p-6">
           <div className="flex items-start justify-between gap-6">
             <div>
-              <p className="text-sm font-medium text-gray-500">Tickets Registered</p>
-              <p className="mt-1 text-3xl font-semibold">
+              <p className="text-sm font-medium text-[#8592B4]">Tickets Registered</p>
+              <p className="mt-1 font-display text-3xl font-semibold text-white">
                 {loading ? "--" : Math.min(totalRegisteredTickets, maxTickets).toLocaleString()}
-                <span className="text-lg font-normal text-gray-400"> / {maxTickets.toLocaleString()}</span>
+                <span className="text-lg font-normal text-[#5b6785]"> / {maxTickets.toLocaleString()}</span>
               </p>
             </div>
 
             <div className="text-right">
               {registrationFull ? (
                 <>
-                  <p className="text-sm font-semibold text-red-600">Registration Full</p>
-                  <p className="mt-1 text-xs text-gray-500">No more tickets can be bound.</p>
+                  <p className="text-sm font-semibold text-[#F87171]">Registration Full</p>
+                  <p className="mt-1 text-xs text-[#8592B4]">No more tickets can be bound.</p>
                 </>
               ) : (
                 <>
-                  <p className="text-sm font-medium">{loading ? "--" : ticketsRemaining.toLocaleString()}</p>
-                  <p className="text-xs text-gray-500">tickets remaining</p>
+                  <p className="text-sm font-medium text-white">{loading ? "--" : ticketsRemaining.toLocaleString()}</p>
+                  <p className="text-xs text-[#8592B4]">tickets remaining</p>
                 </>
               )}
             </div>
           </div>
 
           <div className="mt-5">
-            <div className="h-3 overflow-hidden rounded-full bg-gray-200">
+            <div className="h-3 overflow-hidden rounded-full bg-white/10">
               <div
-                className={`h-full rounded-full ${registrationFull ? "bg-red-500" : "bg-black"}`}
+                className={`h-full rounded-full ${registrationFull ? "bg-[#F87171]" : "bg-[#4C7CFF]"}`}
                 style={{
                   width: `${loading ? 0 : Math.min((totalRegisteredTickets / maxTickets) * 100, 100)}%`,
                 }}
               />
             </div>
-            <p className="mt-2 text-xs text-gray-500">Maximum capacity: {maxTickets.toLocaleString()} tickets</p>
+            <p className="mt-2 text-xs text-[#8592B4]">Maximum capacity: {maxTickets.toLocaleString()} tickets</p>
           </div>
         </section>
 

@@ -7,49 +7,29 @@ interface MetricProps {
   to?: string;
 }
 
-function Metric({
-  label,
-  value,
-  description,
-  to,
-}: MetricProps) {
+function Metric({ label, value, description, to }: MetricProps) {
   const content = (
     <>
-      <p className="text-sm text-gray-500">
-        {label}
-      </p>
-
-      <p className="mt-2 text-3xl font-semibold">
-        {value}
-      </p>
-
-      {description && (
-        <p className="mt-1 text-xs text-gray-400">
-          {description}
-        </p>
-      )}
+      <p className="text-sm text-[#8592B4]">{label}</p>
+      <p className="mt-2 font-display text-3xl font-semibold text-white">{value}</p>
+      {description && <p className="mt-1 text-xs text-[#5b6785]">{description}</p>}
     </>
   );
 
-  const baseClassName =
-    "rounded-xl border border-gray-200 bg-white p-5 shadow-sm";
+  const base = "glass-card rounded-2xl p-5";
 
   if (to) {
     return (
       <Link
         to={to}
-        className={`${baseClassName} block transition hover:border-gray-400 hover:shadow-md`}
+        className={`${base} block transition hover:border-[#4C7CFF]/40 hover:shadow-[0_0_30px_rgba(76,124,255,0.15)]`}
       >
         {content}
       </Link>
     );
   }
 
-  return (
-    <div className={baseClassName}>
-      {content}
-    </div>
-  );
+  return <div className={base}>{content}</div>;
 }
 
 export default Metric;

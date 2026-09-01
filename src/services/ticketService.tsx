@@ -12,7 +12,6 @@ interface RawStudentRow {
   id: string;
   student_id: string;
   full_name: string;
-  email: string;
   reg_type: "main" | "waitlist";
   ticket_status: "pending_collection" | "collected" | "cancelled";
   ticket_id: string | null;
@@ -34,10 +33,9 @@ function normalize(row: RawStudentRow): StudentBindingRecord {
     id: row.id,
     student_id: row.student_id,
     full_name: row.full_name,
-    // Prefer the institutional Taylor's email from freshmen_directory.
-    // Falls back to students.email only if the directory join is missing
-    // (e.g. record not yet synced), so the field is never blank.
-    email: row.freshmen_directory?.taylors_email ?? row.email,
+    // students.email does not exist in the live schema — email is only
+    // ever available via the freshmen_directory join.
+    email: row.freshmen_directory?.taylors_email ?? "",
     reg_type: row.reg_type,
     ticket_status: row.ticket_status,
     ticket_id: row.ticket_id,
@@ -70,7 +68,7 @@ export async function searchStudentForBinding(
     .eq("student_id", cleanId)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   if (!data) return { found: false, mismatch: false, student: null };
 
   const record = normalize(data as unknown as RawStudentRow);

@@ -18,84 +18,49 @@ function StudentRegistrationResult({
   onAttend,
 }: StudentRegistrationResultProps) {
   return (
-    <div className="mt-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-
+    <div className="glass-card mt-6 rounded-2xl p-6">
       <div className="flex items-start justify-between gap-4">
-
         <div>
-          <h2 className="text-lg font-semibold">
-            Student Information
-          </h2>
-
-          <p className="mt-1 text-sm text-gray-500">
-            Registration details
-          </p>
+          <h2 className="font-display text-lg font-semibold text-white">Student Information</h2>
+          <p className="mt-1 text-sm text-[#8592B4]">Registration details</p>
         </div>
 
         <span
           className={`rounded-full px-3 py-1 text-xs font-medium ${
             isAttended
-              ? "bg-green-100 text-green-700"
-              : "bg-gray-100 text-gray-700"
+              ? "bg-[#34D399]/15 text-[#34D399]"
+              : "bg-white/10 text-[#8592B4]"
           }`}
         >
-          {isAttended
-            ? "Attended"
-            : status}
+          {isAttended ? "Attended" : status}
         </span>
-
       </div>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            Student ID
-          </p>
-
-          <p className="mt-1 text-sm font-medium">
-            {studentId}
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#5b6785]">Student ID</p>
+          <p className="mt-1 text-sm font-medium text-white">{studentId}</p>
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            Ticket ID
-          </p>
-
-          <p className="mt-1 text-sm font-medium">
-            {ticketId || "Not assigned"}
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#5b6785]">Ticket ID</p>
+          <p className="mt-1 text-sm font-medium text-white">{ticketId || "Not assigned"}</p>
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            Name
-          </p>
-
-          <p className="mt-1 text-sm font-medium">
-            {name}
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#5b6785]">Name</p>
+          <p className="mt-1 text-sm font-medium text-white">{name}</p>
         </div>
 
         <div>
-          <p className="text-xs font-medium uppercase tracking-wide text-gray-400">
-            Status
-          </p>
-
-          <p className="mt-1 text-sm font-medium">
-            {isAttended
-              ? "Attended"
-              : status}
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wide text-[#5b6785]">Status</p>
+          <p className="mt-1 text-sm font-medium text-white">{isAttended ? "Attended" : status}</p>
         </div>
-
       </div>
 
-      <div className="mt-6 border-t border-gray-100 pt-6">
-
+      <div className="mt-6 border-t border-white/10 pt-6">
         {isAttended ? (
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+          <div className="rounded-lg bg-[#34D399]/10 px-4 py-3 text-sm text-[#34D399]">
             This student has already been marked as attended.
           </div>
         ) : (
@@ -103,16 +68,12 @@ function StudentRegistrationResult({
             type="button"
             onClick={onAttend}
             disabled={loading}
-            className="w-full rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-lg bg-[#4C7CFF] px-4 py-3 text-sm font-medium text-white shadow-[0_0_20px_rgba(76,124,255,0.35)] transition hover:bg-[#3D68E0] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-[#5b6785] disabled:shadow-none"
           >
-            {loading
-              ? "Updating..."
-              : "Mark as Attended"}
+            {loading ? "Updating..." : "Mark as Attended"}
           </button>
         )}
-
       </div>
-
     </div>
   );
 }

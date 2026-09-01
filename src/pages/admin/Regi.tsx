@@ -14,42 +14,20 @@ interface Student {
 
 function Regi() {
   const [query, setQuery] = useState("");
+  const [student, setStudent] = useState<Student | null>(null);
+  const [searching, setSearching] = useState(false);
+  const [attending, setAttending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const [student, setStudent] =
-    useState<Student | null>(null);
-
-  const [searching, setSearching] =
-    useState(false);
-
-  const [attending, setAttending] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
-
-  const [success, setSuccess] =
-    useState<string | null>(null);
-
-  /*
-   * ----------------------------------------
-   * Search student
-   * ----------------------------------------
-   */
-
-  const handleSearch = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedQuery = query.trim().toUpperCase();
 
     if (!trimmedQuery) {
-      setError(
-        "Please enter a Student ID or Ticket ID."
-      );
-
+      setError("Please enter a Student ID or Ticket ID.");
       setStudent(null);
-
       return;
     }
 
@@ -59,155 +37,69 @@ function Regi() {
     setStudent(null);
 
     try {
-      /*
-      * Search students by student_id first, then
-      * fall back to ticket_id. Two separate .eq()
-      * calls instead of .or() so manual/scanned
-      * input can't break PostgREST's filter syntax
-      * (commas, parens, etc).
-      */
-
       const bySid = await supabase
         .from("students")
-        .select(
-          `
-            student_id,
-            ticket_id,
-            full_name,
-            ticket_status,
-            is_attended
-          `
-        )
+        .select(`student_id, ticket_id, full_name, ticket_status, is_attended`)
         .eq("student_id", trimmedQuery)
         .maybeSingle();
 
-      if (bySid.error) {
-        throw bySid.error;
-      }
+      if (bySid.error) throw bySid.error;
 
       let data = bySid.data;
 
       if (!data) {
         const byTid = await supabase
           .from("students")
-          .select(
-            `
-              student_id,
-              ticket_id,
-              full_name,
-              ticket_status,
-              is_attended
-            `
-          )
+          .select(`student_id, ticket_id, full_name, ticket_status, is_attended`)
           .eq("ticket_id", trimmedQuery)
           .maybeSingle();
 
-        if (byTid.error) {
-          throw byTid.error;
-        }
-
+        if (byTid.error) throw byTid.error;
         data = byTid.data;
       }
 
       if (!data) {
-        setError(
-          "No student or ticket was found."
-        );
-
+        setError("No student or ticket was found.");
         return;
       }
 
       setStudent(data as Student);
     } catch (err) {
-      console.error(
-        "Failed to search student:",
-        err
-      );
-
-      setError(
-        "Unable to search for the student. Please try again."
-      );
+      console.error("Failed to search student:", err);
+      setError("Unable to search for the student. Please try again.");
     } finally {
       setSearching(false);
     }
   };
 
-  /*
-   * ----------------------------------------
-   * Mark student as attended
-   * ----------------------------------------
-   */
-
   const handleAttend = async () => {
-    if (!student) {
-      return;
-    }
+    if (!student) return;
 
     setAttending(true);
     setError(null);
     setSuccess(null);
 
     try {
-      /*
-       * Use the backend RPC created by your
-       * colleague.
-       */
+      const { data, error } = await supabase.rpc("toggle_student_attendance", {
+        p_query: student.student_id,
+        p_is_attended: true,
+      });
 
-      const { data, error } =
-        await supabase.rpc(
-          "toggle_student_attendance",
-          {
-            p_query:
-              student.student_id,
-            p_is_attended: true,
-          }
-        );
-
-      if (error) {
-        throw error;
-      }
-
-      /*
-       * The RPC returns the updated student.
-       */
+      if (error) throw error;
 
       if (data) {
-        const updatedStudent =
-          Array.isArray(data)
-            ? data[0]
-            : data;
-
+        const updatedStudent = Array.isArray(data) ? data[0] : data;
         if (updatedStudent) {
-          setStudent(
-            updatedStudent as Student
-          );
+          setStudent(updatedStudent as Student);
         }
       } else {
-        /*
-         * Fallback in case the RPC doesn't
-         * return the updated row.
-         */
-
-        setStudent({
-          ...student,
-          is_attended: true,
-        });
+        setStudent({ ...student, is_attended: true });
       }
 
-      setSuccess(
-        "Student successfully marked as attended."
-      );
+      setSuccess("Student successfully marked as attended.");
     } catch (err) {
-      console.error(
-        "Failed to mark student as attended:",
-        err
-      );
-
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to update attendance."
-      );
+      console.error("Failed to mark student as attended:", err);
+      setError(err instanceof Error ? err.message : "Unable to update attendance.");
     } finally {
       setAttending(false);
     }
@@ -216,103 +108,58 @@ function Regi() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-8">
 
-      {/* Header */}
-
       <div>
-        <h1 className="text-3xl font-semibold">
-          Event Day Registration
-        </h1>
-
-        <p className="mt-2 text-sm text-gray-500">
-          Search for a student or ticket and
-          mark their attendance.
+        <h1 className="font-display text-3xl font-semibold text-white">Event Day Registration</h1>
+        <p className="mt-2 text-sm text-[#8592B4]">
+          Search for a student or ticket and mark their attendance.
         </p>
       </div>
 
-
-      {/* Search */}
-
       <section className="mt-10">
+        <h2 className="text-sm font-semibold text-white">Find Registration</h2>
 
-        <h2 className="text-sm font-semibold">
-          Find Registration
-        </h2>
-
-        <form
-          onSubmit={handleSearch}
-          className="mt-4"
-        >
+        <form onSubmit={handleSearch} className="mt-4">
           <div className="flex flex-col gap-3 sm:flex-row">
-
             <input
               type="text"
               value={query}
-              onChange={(event) =>
-                setQuery(event.target.value)
-              }
+              onChange={(event) => setQuery(event.target.value)}
               placeholder="Enter Student ID or Ticket ID"
-              className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-black focus:ring-1 focus:ring-black"
+              className="flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-[#5b6785] outline-none transition focus:border-[#4C7CFF]"
             />
 
             <button
               type="submit"
               disabled={searching}
-              className="rounded-lg bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-lg bg-[#4C7CFF] px-6 py-3 text-sm font-medium text-white shadow-[0_0_20px_rgba(76,124,255,0.35)] transition hover:bg-[#3D68E0] disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-[#5b6785] disabled:shadow-none"
             >
-              {searching
-                ? "Searching..."
-                : "Search"}
+              {searching ? "Searching..." : "Search"}
             </button>
-
           </div>
         </form>
-
       </section>
 
-
-      {/* Error */}
-
       {error && (
-        <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-6 rounded-lg border border-[#F87171]/20 bg-[#F87171]/10 px-4 py-3 text-sm text-[#F87171]">
           {error}
         </div>
       )}
 
-
-      {/* Success */}
-
       {success && (
-        <div className="mt-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div className="mt-6 rounded-lg border border-[#34D399]/20 bg-[#34D399]/10 px-4 py-3 text-sm text-[#34D399]">
           {success}
         </div>
       )}
 
-
-      {/* Student Result */}
-
       {student && (
         <StudentRegistrationResult
-          studentId={
-            student.student_id
-          }
-          ticketId={
-            student.ticket_id
-          }
-          name={
-            student.full_name
-          }
-          status={
-            student.ticket_status
-          }
-          isAttended={
-            student.is_attended
-          }
-          loading={
-            attending
-          }
-          onAttend={
-            handleAttend
-          }
+          studentId={student.student_id}
+          ticketId={student.ticket_id}
+          name={student.full_name}
+          status={student.ticket_status}
+          isAttended={student.is_attended}
+          loading={attending}
+          onAttend={handleAttend}
         />
       )}
 

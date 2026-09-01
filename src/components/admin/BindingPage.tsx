@@ -77,26 +77,26 @@ function BindingPage({ title, description, type }: BindingPageProps) {
       <Header title={title} description={description} />
 
       <main className="mx-auto max-w-6xl px-6 py-12">
-        <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold">Search Student</h2>
+        <section className="glass-card rounded-2xl p-6">
+          <h2 className="mb-4 text-lg font-semibold text-white">Search Student</h2>
           <BindingSearch onSearch={handleSearch} />
         </section>
 
         <section className="mt-6">
           {searching && (
-            <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
+            <div className="glass-card rounded-2xl border-dashed p-8 text-center text-sm text-[#8592B4]">
               Searching...
             </div>
           )}
 
           {!searching && notFound && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-600">
+            <div className="rounded-2xl border border-[#F87171]/20 bg-[#F87171]/10 p-6 text-sm text-[#F87171]">
               No registration found for that Student ID.
             </div>
           )}
 
           {!searching && mismatch && student && (
-            <div className="rounded-xl border border-orange-200 bg-orange-50 p-6 text-sm text-orange-700">
+            <div className="rounded-2xl border border-[#FBBF24]/20 bg-[#FBBF24]/10 p-6 text-sm text-[#FBBF24]">
               {student.full_name} is registered under a different queue (
               {student.reg_type === "waitlist" ? "Waitlist" : student.venue}) and can't be bound here.
             </div>
@@ -115,12 +115,12 @@ function BindingPage({ title, description, type }: BindingPageProps) {
           )}
 
           {!searching && !student && !notFound && (
-            <div className="rounded-xl border border-dashed border-gray-300 p-8 text-center text-sm text-gray-500">
+            <div className="glass-card rounded-2xl border-dashed p-8 text-center text-sm text-[#8592B4]">
               Search for a student to view their registration.
             </div>
           )}
 
-          {feedback && <p className="mt-4 text-sm text-gray-600">{feedback}</p>}
+          {feedback && <p className="mt-4 text-sm text-[#8592B4]">{feedback}</p>}
         </section>
       </main>
     </>
