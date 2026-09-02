@@ -15,11 +15,11 @@ function AdminNavbar() {
     <nav className="glass-card sticky top-0 z-20 border-x-0 border-t-0">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
 
-        <Link to="/dashboard" className="flex items-center gap-3">
+        <Link to="/dashboard" className="flex items-center">
           <img
-            src="/Elysium_Logo.jpg"
+            src="/Elysium Logo (Blue).png"
             alt="Elysium Logo"
-            className="h-8 w-8 rounded-md object-contain ring-1 ring-white/10"
+            className="h-15 w-25 rounded-md object-contain"
           />
           <span className="font-display text-lg font-semibold tracking-tight text-white">
             ELYSIUM ADMIN

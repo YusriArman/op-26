@@ -52,88 +52,85 @@ function AttendedStudents() {
         </p>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
+      {/* Search — now full width, on top */}
+      <section className="glass-card mt-8 rounded-2xl p-5">
+        <h2 className="text-sm font-semibold text-white">Search</h2>
 
-        <section className="glass-card h-fit rounded-2xl p-5 lg:sticky lg:top-8">
-          <h2 className="text-sm font-semibold text-white">Search</h2>
+        <div className="mt-4">
+          <BindingSearch
+            onSearch={handleSearch}
+            placeholder="Student ID, name, or ticket ID"
+          />
+        </div>
 
-          <div className="mt-4">
-            <BindingSearch
-              onSearch={handleSearch}
-              placeholder="Student ID, name, or ticket ID"
-              stacked
-            />
+        {activeQuery && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="mt-3 text-xs text-[#8592B4] underline transition hover:text-white"
+          >
+            Clear search
+          </button>
+        )}
+      </section>
+
+      {/* Table — now full width, underneath */}
+      <section className="glass-card mt-6 rounded-2xl">
+        {error && (
+          <div className="border-b border-[#F87171]/20 bg-[#F87171]/10 px-4 py-3 text-sm text-[#F87171]">
+            {error}
           </div>
+        )}
 
-          {activeQuery && (
-            <button
-              type="button"
-              onClick={handleClear}
-              className="mt-3 text-xs text-[#8592B4] underline transition hover:text-white"
-            >
-              Clear search
-            </button>
-          )}
-        </section>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-white/10 text-sm">
+            <thead className="bg-white/5">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
+                  Student ID
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
+                  Ticket ID
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
+                  Name
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
+                  Email
+                </th>
+              </tr>
+            </thead>
 
-        <section className="glass-card rounded-2xl">
-          {error && (
-            <div className="border-b border-[#F87171]/20 bg-[#F87171]/10 px-4 py-3 text-sm text-[#F87171]">
-              {error}
-            </div>
-          )}
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10 text-sm">
-              <thead className="bg-white/5">
+            <tbody className="divide-y divide-white/5">
+              {loading && (
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
-                    Student ID
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
-                    Ticket ID
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
-                    Name
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-[#8592B4]">
-                    Email
-                  </th>
+                  <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
+                    Loading...
+                  </td>
                 </tr>
-              </thead>
+              )}
 
-              <tbody className="divide-y divide-white/5">
-                {loading && (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
-                      Loading...
-                    </td>
+              {!loading && students.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
+                    No attended students found.
+                  </td>
+                </tr>
+              )}
+
+              {!loading &&
+                students.map((student) => (
+                  <tr key={student.student_id}>
+                    <td className="px-4 py-3 font-medium text-white">{student.student_id}</td>
+                    <td className="px-4 py-3 text-[#8592B4]">{student.ticket_id ?? "—"}</td>
+                    <td className="px-4 py-3 text-white">{student.full_name}</td>
+                    <td className="break-all px-4 py-3 text-[#8592B4]">{student.email ?? "—"}</td>
                   </tr>
-                )}
-
-                {!loading && students.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-sm text-[#5b6785]">
-                      No attended students found.
-                    </td>
-                  </tr>
-                )}
-
-                {!loading &&
-                  students.map((student) => (
-                    <tr key={student.student_id}>
-                      <td className="px-4 py-3 font-medium text-white">{student.student_id}</td>
-                      <td className="px-4 py-3 text-[#8592B4]">{student.ticket_id ?? "—"}</td>
-                      <td className="px-4 py-3 text-white">{student.full_name}</td>
-                      <td className="break-all px-4 py-3 text-[#8592B4]">{student.email ?? "—"}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-      </div>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
     </main>
   );
