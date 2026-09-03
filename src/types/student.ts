@@ -34,3 +34,14 @@ export interface AttendedStudentRecord {
   email: string;
 }
 
+export interface CollectionSlot {
+  id: string;
+  venue: Venue;
+  slot_date: string;
+  start_time: string;
+  end_time: string;
+  max_capacity: number;
+  booked_count: number;
+  created_at?: string;
+}
+
