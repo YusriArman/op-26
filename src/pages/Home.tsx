@@ -41,13 +41,13 @@ function Queue() {
     try {
       const { data, error } = await supabase
         .from('admin_overall_metrics')
-        .select('total_main_registered, total_waitlisted')
+        .select('total_queue_claimed, total_waitlisted')
         .single();
 
       if (error) {
         console.error('Error fetching live counts:', error.message);
       } else if (data) {
-        setQueueCount(data.total_main_registered || 0);
+        setQueueCount(data.total_queue_claimed || 0);
         setWaitingCount(data.total_waitlisted || 0);
       }
     } catch (err) {

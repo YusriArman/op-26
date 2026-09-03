@@ -1,3 +1,4 @@
+// src/hooks/useDashboardStats.ts
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 
@@ -21,6 +22,7 @@ interface WaitlistStats {
 interface OverallStats {
   total_main_registered: number;
   total_waitlisted: number;
+  total_tickets_collected_and_bound: number;
   total_students_attended: number;
   target_capacity: number;
   open_dday_slots: number;
@@ -36,6 +38,7 @@ interface DashboardStats {
 interface StudentRow {
   reg_type: "main" | "waitlist";
   ticket_status: "pending_collection" | "collected" | "cancelled";
+  binding_status: "bound" | "unbound";
   is_attended: boolean;
   slot_id: string | null;
 }
@@ -45,6 +48,7 @@ interface OverallMetricsRow {
   waitlist_capacity: number;
   total_main_registered: number;
   total_waitlisted: number;
+  total_tickets_collected_and_bound: number;
   total_students_attended: number;
   open_dday_slots: number;
 }
@@ -57,6 +61,7 @@ const emptyStats: DashboardStats = {
   overall: {
     total_main_registered: 0,
     total_waitlisted: 0,
+    total_tickets_collected_and_bound: 0,
     total_students_attended: 0,
     target_capacity: FALLBACK_TARGET_CAPACITY,
     open_dday_slots: FALLBACK_TARGET_CAPACITY,
@@ -73,14 +78,6 @@ const emptyStats: DashboardStats = {
   },
 };
 
-// Matches admin_overall_metrics' own definition: reg_type = 'main' OR
-// binding_status = 'bound'. Kept in sync with the view intentionally,
-// since the Day 1/Day 2 breakdown below still has to be computed
-// client-side (no per-venue view exists yet).
-function isMainOccupant(s: StudentRow): boolean {
-  return s.reg_type === "main" || s.ticket_status === "collected";
-}
-
 export function useDashboardStats() {
   const [stats, setStats] = useState<DashboardStats>(emptyStats);
   const [loading, setLoading] = useState(true);
@@ -96,7 +93,7 @@ export function useDashboardStats() {
 
       const [metricsRes, studentsRes, slotsRes] = await Promise.all([
         supabase.from("admin_overall_metrics").select("*").single(),
-        supabase.from("students").select("reg_type, ticket_status, is_attended, slot_id"),
+        supabase.from("students").select("reg_type, ticket_status, binding_status, is_attended, slot_id"),
         supabase.from("collection_slots").select("id, venue, max_capacity"),
       ]);
 
@@ -105,9 +102,9 @@ export function useDashboardStats() {
       if (metricsRes.error || studentsRes.error || slotsRes.error) {
         setError(
           metricsRes.error?.message ??
-            studentsRes.error?.message ??
-            slotsRes.error?.message ??
-            "Failed to load stats."
+          studentsRes.error?.message ??
+          slotsRes.error?.message ??
+          "Failed to load stats."
         );
         setLoading(false);
         return;
@@ -122,32 +119,28 @@ export function useDashboardStats() {
         const venueSlotIds = new Set(venueSlots.map((s) => s.id));
         const capacity = venueSlots.reduce((sum, s) => sum + s.max_capacity, 0);
 
+        // Main queue students assigned to this venue
         const venueStudents = students.filter(
-          (s) => isMainOccupant(s) && s.slot_id && venueSlotIds.has(s.slot_id)
+          (s) => s.reg_type === "main" && s.slot_id && venueSlotIds.has(s.slot_id)
         );
 
         return {
           registered: venueStudents.length,
-          binded: venueStudents.filter((s) => s.ticket_status === "collected").length,
+          binded: venueStudents.filter((s) => s.binding_status === "bound").length,
           attended: venueStudents.filter((s) => s.is_attended).length,
-          // Remaining capacity for this day — how many more people could
-          // still register/collect for this venue, not how many already-
-          // registered students haven't collected yet.
           emptySlots: Math.max(capacity - venueStudents.length, 0),
           capacity,
         };
       };
 
-      // Still genuinely waiting — matches the view's own definition:
-      // reg_type = 'waitlist' AND binding_status = 'unbound'.
+      // Active waitlisted students (waiting without a ticket)
       const waitlistPending = students.filter(
-        (s) => s.reg_type === "waitlist" && s.ticket_status !== "collected"
+        (s) => s.reg_type === "waitlist" && s.binding_status === "unbound"
       );
-      // Originally waitlisted, now bound — counted in the view's
-      // total_main_registered, but has no venue so can't appear in the
-      // Day 1/Day 2 breakdown.
+
+      // Promoted waitlisted students (claimed a leftover physical ticket)
       const waitlistPromoted = students.filter(
-        (s) => s.reg_type === "waitlist" && s.ticket_status === "collected"
+        (s) => s.reg_type === "waitlist" && s.binding_status === "bound"
       );
 
       const waitlistCapacity = metrics.waitlist_capacity ?? FALLBACK_WAITLIST_CAPACITY;
@@ -156,6 +149,7 @@ export function useDashboardStats() {
         overall: {
           total_main_registered: metrics.total_main_registered,
           total_waitlisted: metrics.total_waitlisted,
+          total_tickets_collected_and_bound: metrics.total_tickets_collected_and_bound,
           total_students_attended: metrics.total_students_attended,
           target_capacity: metrics.target_capacity ?? FALLBACK_TARGET_CAPACITY,
           open_dday_slots: metrics.open_dday_slots,
@@ -166,10 +160,6 @@ export function useDashboardStats() {
           registered: waitlistPending.length,
           attended: waitlistPending.filter((s) => s.is_attended).length,
           capacity: waitlistCapacity,
-          // Once a waitlist slot is used — whether the student is still
-          // pending or has since been promoted via binding — it stays
-          // consumed. It should not free back up just because someone
-          // got their ticket.
           available: Math.max(
             waitlistCapacity - (waitlistPending.length + waitlistPromoted.length),
             0
@@ -178,6 +168,7 @@ export function useDashboardStats() {
           promotedAttended: waitlistPromoted.filter((s) => s.is_attended).length,
         },
       });
+
       setLoading(false);
     }
 

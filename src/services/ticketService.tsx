@@ -1,86 +1,81 @@
+// src/services/ticketService.ts
 import { supabase } from "../utils/supabase";
-import type { StudentBindingRecord, BindResult, Venue } from "../types/student";
+import type { BindResult, StudentBindingRecord } from "../types/student";
 
-export type BindingPageType = "day-1" | "day-2" | "waitlist";
+export type BindingPageType = "day1" | "day2" | "day-1" | "day-2" | "waitlist";
 
-const VENUE_BY_TYPE: Record<"day-1" | "day-2", "TGH" | "LT1"> = {
-  "day-1": "TGH",
-  "day-2": "LT1",
-};
-
-interface RawStudentRow {
-  id: string;
-  student_id: string;
-  full_name: string;
-  reg_type: "main" | "waitlist";
-  ticket_status: "pending_collection" | "collected" | "cancelled";
-  ticket_id: string | null;
-  binding_status: "bound" | "unbound";
-  waitlist_number: number | null;
-  collection_slots: {
-    venue: Venue;
-    slot_date: string;
-    start_time: string;
-    end_time: string;
-  } | null;
-  freshmen_directory: {
-    taylors_email: string | null;
-  } | null;
+export interface SearchBindingResult {
+  found: boolean;
+  student: StudentBindingRecord | null;
+  mismatch: boolean;
 }
 
-function normalize(row: RawStudentRow): StudentBindingRecord {
+function mapToStudentBindingRecord(row: any): StudentBindingRecord {
   return {
     id: row.id,
     student_id: row.student_id,
     full_name: row.full_name,
-    // students.email does not exist in the live schema — email is only
-    // ever available via the freshmen_directory join.
-    email: row.freshmen_directory?.taylors_email ?? "",
+    email: row.taylors_email || row.personal_email || row.email || "",
     reg_type: row.reg_type,
     ticket_status: row.ticket_status,
     ticket_id: row.ticket_id,
     binding_status: row.binding_status,
     waitlist_number: row.waitlist_number,
-    venue: row.collection_slots?.venue ?? null,
-    slot_date: row.collection_slots?.slot_date ?? null,
-    slot_start_time: row.collection_slots?.start_time ?? null,
-    slot_end_time: row.collection_slots?.end_time ?? null,
+    venue: row.venue,
+    slot_date: row.slot_date,
+    slot_start_time: row.start_time || row.slot_start_time || null,
+    slot_end_time: row.end_time || row.slot_end_time || null,
   };
 }
 
-export interface BindingSearchResult {
-  found: boolean;
-  mismatch: boolean;
-  student: StudentBindingRecord | null;
-}
-
+/**
+ * Searches for a student by Student ID (SID) or Ticket ID (TID)
+ * and detects venue/day mismatch if searching from a specific day booth.
+ */
 export async function searchStudentForBinding(
-  studentId: string,
-  type: BindingPageType
-): Promise<BindingSearchResult> {
-  const cleanId = studentId.trim().toUpperCase();
+  query: string,
+  pageType?: BindingPageType
+): Promise<SearchBindingResult> {
+  const cleanQuery = query.trim().toUpperCase();
+  if (!cleanQuery) {
+    return { found: false, student: null, mismatch: false };
+  }
 
   const { data, error } = await supabase
-    .from("students")
-    .select(
-      "*, collection_slots ( venue, slot_date, start_time, end_time ), freshmen_directory ( taylors_email )"
-    )
-    .eq("student_id", cleanId)
+    .from("admin_students_overview")
+    .select("*")
+    .or(`student_id.eq.${cleanQuery},ticket_id.eq.${cleanQuery}`)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
-  if (!data) return { found: false, mismatch: false, student: null };
+  if (error || !data) {
+    return { found: false, student: null, mismatch: false };
+  }
 
-  const record = normalize(data as unknown as RawStudentRow);
+  const student = mapToStudentBindingRecord(data);
 
-  const matches =
-    type === "waitlist"
-      ? record.reg_type === "waitlist"
-      : record.reg_type === "main" && record.venue === VENUE_BY_TYPE[type];
+  // Check for booth vs booked slot mismatch
+  let mismatch = false;
+  if (pageType === "day1" || pageType === "day-1") {
+    // Day 1 booth expects TGH main registration
+    mismatch = student.venue !== "TGH" || student.reg_type !== "main";
+  } else if (pageType === "day2" || pageType === "day-2") {
+    // Day 2 booth expects LT1 main registration
+    mismatch = student.venue !== "LT1" || student.reg_type !== "main";
+  } else if (pageType === "waitlist") {
+    // Waitlist booth expects waitlist reg_type
+    mismatch = student.reg_type !== "waitlist";
+  }
 
-  return { found: true, mismatch: !matches, student: record };
+  return {
+    found: true,
+    student,
+    mismatch,
+  };
 }
 
+/**
+ * Binds a physical ticket ID to a student ID
+ */
 export async function bindTicketToStudent(
   studentId: string,
   ticketId: string
@@ -88,61 +83,26 @@ export async function bindTicketToStudent(
   const cleanSid = studentId.trim().toUpperCase();
   const cleanTid = ticketId.trim().toUpperCase();
 
-  // Best-effort pre-check for a friendly message; the UNIQUE constraint
-  // on students.ticket_id is what actually prevents a real duplicate.
-  const { data: existing, error: existingError } = await supabase
-    .from("students")
-    .select("student_id")
-    .eq("ticket_id", cleanTid)
-    .maybeSingle();
-
-  if (existingError) throw existingError;
-
-  if (existing) {
-    return {
-      success: false,
-      message: `Ticket ID [${cleanTid}] is already bound to Student ID: ${existing.student_id}`,
-    };
-  }
-
-  const { data: userData } = await supabase.auth.getUser();
-
-  const { data, error } = await supabase
-    .from("students")
-    .update({
-      ticket_id: cleanTid,
-      binding_status: "bound",
-      ticket_status: "collected",
-      timestamp_of_binding: new Date().toISOString(),
-      bound_by: userData.user?.id ?? null,
-    })
-    .eq("student_id", cleanSid)
-    .eq("binding_status", "unbound") // guard: no-op if already bound between search and click
-    .select("student_id, full_name, ticket_id")
-    .maybeSingle();
+  const { data, error } = await supabase.rpc("bind_ticket_to_student", {
+    p_student_id: cleanSid,
+    p_ticket_id: cleanTid,
+  });
 
   if (error) {
-    if (error.code === "23505") {
-      return {
-        success: false,
-        message: `Ticket ID [${cleanTid}] was just bound by someone else. Please refresh and try again.`,
-      };
-    }
-    throw error;
-  }
-
-  if (!data) {
     return {
       success: false,
-      message: "Student not found, or their ticket was already bound by someone else.",
+      message: error.message || "Failed to bind ticket.",
     };
   }
 
   return {
-    success: true,
+    success: data.success,
+    message: data.message,
     student_id: data.student_id,
-    student_name: data.full_name,
-    ticket_id: data.ticket_id ?? cleanTid,
-    message: `Successfully bound physical ticket [${data.ticket_id}] to ${data.full_name}`,
+    student_name: data.student_name,
+    ticket_id: data.ticket_id,
   };
 }
+
+// Export alias for backward compatibility
+export const bindTicket = bindTicketToStudent;
