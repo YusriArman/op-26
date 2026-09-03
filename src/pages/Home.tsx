@@ -28,6 +28,17 @@ function Queue() {
   const queuePct = Math.min(100, Math.max(0, (queueCount / maxTickets) * 100));
   const waitingPct = Math.min(100, Math.max(0, (waitingCount / maxWaiting) * 100));
 
+  // Dynamic Button State Logic
+  const canQueue = !queueFull;
+  const canWaitlist = queueFull && !waitlistFull;
+
+  const queueButtonLabel = queueFull ? 'Main Queue Full' : 'Click to Queue';
+  const waitlistButtonLabel = waitlistFull
+    ? 'Waitlist Full'
+    : queueFull
+      ? 'Enter Waitlist'
+      : 'Waitlist Opens at 1,500';
+
   // Transition animation for Hero video
   const [heroDismissed, setHeroDismissed] = useState(heroHasPlayed);
 
@@ -64,7 +75,6 @@ function Queue() {
       await fetchLiveCounts();
     };
 
-    // Run asynchronously on mount
     void poll();
 
     const interval = setInterval(() => {
@@ -200,31 +210,31 @@ function Queue() {
               </div>
             </div>
 
-            {/* Side-by-Side Action Buttons */}
+            {/* Side-by-Side Action Buttons with Text Shadows */}
             <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
 
               {/* Button 1: Main Queue */}
               <button
                 onClick={() => setShowQueueModal(true)}
-                disabled={queueFull}
-                className={`w-full sm:w-64 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(60,246,247,0.3)] ${queueFull
-                  ? 'cursor-not-allowed bg-gray-600/50 border border-gray-500 text-gray-400'
-                  : 'bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7]'
+                disabled={!canQueue}
+                className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canQueue
+                  ? 'text-white [text-shadow:0_0_8px_rgba(60,246,247,0.9)] bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7] shadow-[0_0_20px_rgba(60,246,247,0.3)] cursor-pointer'
+                  : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
                   }`}
               >
-                {queueFull ? 'Main Queue Full' : 'Click to Queue'}
+                {queueButtonLabel}
               </button>
 
               {/* Button 2: Enter Waitlist */}
               <button
                 onClick={() => setShowWaitlistModal(true)}
-                disabled={waitlistFull}
-                className={`w-full sm:w-64 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(225,57,250,0.3)] ${waitlistFull
-                  ? 'cursor-not-allowed bg-gray-600/50 border border-gray-500 text-gray-400'
-                  : 'bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa]'
+                disabled={!canWaitlist}
+                className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canWaitlist
+                  ? 'text-white [text-shadow:0_0_8px_rgba(225,57,250,0.9)] bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa] shadow-[0_0_20px_rgba(225,57,250,0.3)] cursor-pointer'
+                  : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
                   }`}
               >
-                {waitlistFull ? 'Waitlist Full' : 'Enter Waitlist'}
+                {waitlistButtonLabel}
               </button>
 
             </div>
