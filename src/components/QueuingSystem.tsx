@@ -52,8 +52,9 @@ export default function QueueingSystem({
         async function loadSlots() {
             setLoadingSlots(true);
 
+            // ✅ Reading from dynamic view 'available_slots'
             const { data, error } = await supabase
-                .from('collection_slots')
+                .from('available_slots')
                 .select('*')
                 .order('slot_date', { ascending: true })
                 .order('start_time', { ascending: true });
@@ -81,11 +82,17 @@ export default function QueueingSystem({
         };
     }, [isWaitlistOnly]);
 
-    // Lock background scrolling while modal is open
+    // Lock background scrolling while modal is open & reset form
     useEffect(() => {
         if (!isOpen) return;
 
         document.body.style.overflow = 'hidden';
+        setStudentId('');
+        setFullName('');
+        setTaylorsEmail('');
+        setPersonalEmail('');
+        setErrorMessage(null);
+        setResult(null);
 
         return () => {
             document.body.style.overflow = 'unset';
@@ -189,18 +196,18 @@ export default function QueueingSystem({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 overflow-y-auto">
-            <div className="w-full max-w-lg rounded-none p-[1px] bg-gradient-to-r from-[#00F0FF]/70 via-[#E000FF]/70 to-[#2596be]/70 shadow-[0_0_35px_rgba(0,240,255,0.25)] relative text-white my-8">
+            <div className="w-full max-w-lg rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/70 via-[#e139fa]/70 to-[#6045f4]/70 shadow-[0_0_35px_rgba(60,246,247,0.25)] relative text-white my-8">
                 <div className="w-full h-full bg-[#090520]/95 backdrop-blur-xl p-6 sm:p-8">
                     {/* Tech Corner Decorative Accents */}
-                    <div className="absolute top-0 left-0 h-3.5 w-3.5 border-t-2 border-l-2 border-[#00F0FF]" />
-                    <div className="absolute top-0 right-0 h-3.5 w-3.5 border-t-2 border-r-2 border-[#00F0FF]" />
-                    <div className="absolute bottom-0 left-0 h-3.5 w-3.5 border-b-2 border-l-2 border-[#00F0FF]" />
-                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 border-b-2 border-r-2 border-[#00F0FF]" />
+                    <div className="absolute top-0 left-0 h-3.5 w-3.5 border-t-2 border-l-2 border-[#3cf6f7]" />
+                    <div className="absolute top-0 right-0 h-3.5 w-3.5 border-t-2 border-r-2 border-[#3cf6f7]" />
+                    <div className="absolute bottom-0 left-0 h-3.5 w-3.5 border-b-2 border-l-2 border-[#3cf6f7]" />
+                    <div className="absolute bottom-0 right-0 h-3.5 w-3.5 border-b-2 border-r-2 border-[#3cf6f7]" />
 
                     {/* Modal Header */}
-                    <div className="flex items-start justify-between border-b border-cyan-400/20 pb-4">
+                    <div className="flex items-start justify-between border-b border-[#3cf6f7]/20 pb-4">
                         <div>
-                            <h3 className="text-lg sm:text-xl font-futura-heavy font-bold uppercase tracking-[0.18em] text-[#00F0FF] drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]">
+                            <h3 className="text-lg sm:text-xl font-futura-heavy font-bold uppercase tracking-[0.18em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.6)]">
                                 {result
                                     ? 'Registration Confirmed!'
                                     : isWaitlistOnly
@@ -215,7 +222,7 @@ export default function QueueingSystem({
                         </div>
                         <button
                             onClick={onClose}
-                            className="rounded-none p-1.5 text-gray-400 hover:text-[#00F0FF] hover:bg-cyan-950/40 transition"
+                            className="rounded-none p-1.5 text-gray-400 hover:text-[#3cf6f7] hover:bg-cyan-950/40 transition"
                         >
                             ✕
                         </button>
@@ -225,10 +232,10 @@ export default function QueueingSystem({
                     {result ? (
                         /* SUCCESS SCREEN */
                         <div className="py-6 text-center">
-                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none border border-cyan-400 bg-cyan-500/20 text-[#00F0FF] text-2xl font-bold mb-4 shadow-[0_0_15px_rgba(0,240,255,0.6)]">
+                            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none border border-[#3cf6f7] bg-[#3cf6f7]/20 text-[#3cf6f7] text-2xl font-bold mb-4 shadow-[0_0_15px_rgba(60,246,247,0.6)]">
                                 ✓
                             </div>
-                            <h4 className="text-base font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider">
+                            <h4 className="text-base font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider">
                                 {result.type === 'main'
                                     ? 'You\u2019ve Secured a Pass!'
                                     : `Waitlist Position #${result.waitlistNumber}`}
@@ -236,9 +243,9 @@ export default function QueueingSystem({
                             <p className="mt-2 text-xs font-futura-book text-gray-200 px-4 leading-relaxed">{result.message}</p>
 
                             {result.slotDetails && (
-                                <div className="mt-5 rounded-none p-[1px] bg-gradient-to-r from-cyan-400/50 via-purple-500/50 to-pink-500/50 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
+                                <div className="mt-5 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/50 via-[#6045f4]/50 to-[#e139fa]/50 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
                                     <div className="w-full h-full bg-[#160b38]/90 p-4 text-left">
-                                        <p className="text-[11px] font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
+                                        <p className="text-[11px] font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
                                             Ticket Collection Venue &amp; Time:
                                         </p>
                                         <p className="text-sm font-futura-heavy font-bold text-white mt-1">
@@ -249,24 +256,24 @@ export default function QueueingSystem({
                                         <p className="text-xs font-futura-book text-gray-300 mt-0.5">
                                             {formatDate(result.slotDetails.slotDate)}
                                         </p>
-                                        <p className="text-xs font-futura-medium font-semibold text-pink-400 mt-0.5">
+                                        <p className="text-xs font-futura-medium font-semibold text-[#e139fa] mt-0.5">
                                             {formatTime(result.slotDetails.startTime)} – {formatTime(result.slotDetails.endTime)}
                                         </p>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="mt-4 rounded-none p-[1px] bg-gradient-to-r from-purple-500/30 to-cyan-500/30">
+                            <div className="mt-4 rounded-none p-[1px] bg-gradient-to-r from-[#6045f4]/30 to-[#3cf6f7]/30">
                                 <div className="bg-[#160b38]/60 p-3 text-xs font-futura-book text-gray-300 text-left space-y-1">
-                                    <p><strong className="text-cyan-300">Student ID:</strong> {studentId.toUpperCase()}</p>
-                                    <p><strong className="text-cyan-300">Taylor's Email:</strong> {taylorsEmail.toLowerCase()}</p>
-                                    <p><strong className="text-cyan-300">Personal Email:</strong> {personalEmail.toLowerCase()}</p>
+                                    <p><strong className="text-[#3cf6f7]">Student ID:</strong> {studentId.toUpperCase()}</p>
+                                    <p><strong className="text-[#3cf6f7]">Taylor's Email:</strong> {taylorsEmail.toLowerCase()}</p>
+                                    <p><strong className="text-[#3cf6f7]">Personal Email:</strong> {personalEmail.toLowerCase()}</p>
                                 </div>
                             </div>
 
                             <button
                                 onClick={onClose}
-                                className="mt-6 w-full rounded-none bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white shadow-[0_0_20px_rgba(0,240,255,0.4)] transition"
+                                className="mt-6 w-full rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white shadow-[0_0_20px_rgba(60,246,247,0.4)] transition"
                             >
                                 Done
                             </button>
@@ -281,10 +288,10 @@ export default function QueueingSystem({
                             )}
 
                             <div>
-                                <label className="block text-xs font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider">
+                                <label className="block text-xs font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider">
                                     Student ID (SID) *
                                 </label>
-                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-purple-500/40 via-cyan-500/40 to-pink-500/40">
+                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-[#6045f4]/40 via-[#3cf6f7]/40 to-[#e139fa]/40">
                                     <input
                                         type="text"
                                         required
@@ -297,10 +304,10 @@ export default function QueueingSystem({
                             </div>
 
                             <div>
-                                <label className="block text-xs font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider">
+                                <label className="block text-xs font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider">
                                     Full Name (English Letters Only) *
                                 </label>
-                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-purple-500/40 via-cyan-500/40 to-pink-500/40">
+                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-[#6045f4]/40 via-[#3cf6f7]/40 to-[#e139fa]/40">
                                     <input
                                         type="text"
                                         required
@@ -313,10 +320,10 @@ export default function QueueingSystem({
                             </div>
 
                             <div>
-                                <label className="block text-xs font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider">
+                                <label className="block text-xs font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider">
                                     Taylor's Student Email *
                                 </label>
-                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-purple-500/40 via-cyan-500/40 to-pink-500/40">
+                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-[#6045f4]/40 via-[#3cf6f7]/40 to-[#e139fa]/40">
                                     <input
                                         type="email"
                                         required
@@ -329,10 +336,10 @@ export default function QueueingSystem({
                             </div>
 
                             <div>
-                                <label className="block text-xs font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider">
+                                <label className="block text-xs font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider">
                                     Personal Email *
                                 </label>
-                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-purple-500/40 via-cyan-500/40 to-pink-500/40">
+                                <div className="mt-1 p-[1px] rounded-none bg-gradient-to-r from-[#6045f4]/40 via-[#3cf6f7]/40 to-[#e139fa]/40">
                                     <input
                                         type="email"
                                         required
@@ -347,7 +354,7 @@ export default function QueueingSystem({
                             {/* Collection Slot Selection (Only if Main Queue) */}
                             {!isWaitlistOnly && (
                                 <div className="pt-2">
-                                    <label className="block text-xs font-futura-heavy font-bold text-cyan-300 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-wider mb-2">
                                         Select Physical Ticket Collection Slot *
                                     </label>
 
@@ -371,8 +378,8 @@ export default function QueueingSystem({
                                                         className={`cursor-pointer rounded-none p-[1px] transition ${isFull
                                                             ? 'opacity-40 bg-gray-700 cursor-not-allowed'
                                                             : isSelected
-                                                                ? 'bg-gradient-to-r from-[#00F0FF] via-[#E000FF] to-[#2596be] shadow-[0_0_12px_rgba(0,240,255,0.4)]'
-                                                                : 'bg-gradient-to-r from-purple-500/30 via-cyan-500/30 to-pink-500/30 hover:from-cyan-400/60 hover:to-purple-400/60'
+                                                                ? 'bg-gradient-to-r from-[#3cf6f7] via-[#e139fa] to-[#6045f4] shadow-[0_0_12px_rgba(60,246,247,0.5)]'
+                                                                : 'bg-gradient-to-r from-[#6045f4]/30 via-[#3cf6f7]/30 to-[#e139fa]/30 hover:from-[#3cf6f7]/60 hover:to-[#6045f4]/60'
                                                             }`}
                                                     >
                                                         <div className="w-full h-full bg-[#160b38]/90 p-3 flex items-center justify-between">
@@ -392,7 +399,7 @@ export default function QueueingSystem({
                                                                         FULL
                                                                     </span>
                                                                 ) : (
-                                                                    <span className="text-[11px] font-futura-medium font-semibold text-cyan-300 drop-shadow-[0_0_4px_rgba(0,240,255,0.8)]">
+                                                                    <span className="text-[11px] font-futura-medium font-semibold text-[#3cf6f7] drop-shadow-[0_0_4px_rgba(60,246,247,0.8)]">
                                                                         {spotsLeft} spots left
                                                                     </span>
                                                                 )}
@@ -407,19 +414,19 @@ export default function QueueingSystem({
                             )}
 
                             {/* Actions */}
-                            <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-cyan-400/20">
+                            <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-[#3cf6f7]/20">
                                 <button
                                     type="button"
                                     onClick={onClose}
                                     disabled={submitting}
-                                    className="rounded-none border border-purple-500/40 px-4 py-2.5 text-xs font-futura-medium text-gray-300 hover:text-white hover:bg-purple-900/30 transition"
+                                    className="rounded-none border border-[#6045f4]/50 px-4 py-2.5 text-xs font-futura-medium text-gray-300 hover:text-white hover:bg-[#6045f4]/30 transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting || (!isWaitlistOnly && !selectedSlotId)}
-                                    className="rounded-none bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(0,240,255,0.4)] transition flex items-center gap-2"
+                                    className="rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(60,246,247,0.4)] transition flex items-center gap-2"
                                 >
                                     {submitting ? (
                                         <>

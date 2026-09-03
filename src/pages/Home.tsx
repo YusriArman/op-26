@@ -49,9 +49,24 @@ function Queue() {
 
   // Poll counts on load and every 10 seconds
   useEffect(() => {
-    fetchLiveCounts();
-    const interval = setInterval(fetchLiveCounts, 10000);
-    return () => clearInterval(interval);
+    let isMounted = true;
+
+    const poll = async () => {
+      if (!isMounted) return;
+      await fetchLiveCounts();
+    };
+
+    // Run asynchronously on mount
+    void poll();
+
+    const interval = setInterval(() => {
+      void poll();
+    }, 10000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [fetchLiveCounts]);
 
   // Video dismiss listeners
