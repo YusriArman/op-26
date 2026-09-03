@@ -22,15 +22,21 @@ function FAQ() {
           align="center"
         />
 
-        <p className="mb-6 text-center text-sm text-gray-200">
-          Contact us if you have any issues at op.elysium2026@gmail.com
+        <p className="mt-6 sm:mt-8 mb-10 text-center text-base sm:text-lg font-futura-medium text-gray-200 tracking-wide">
+          Contact us if you have any issues at{" "}
+          <a
+            href="mailto:op.elysium2026@gmail.com"
+            className="text-[#3cf6f7] hover:underline drop-shadow-[0_0_8px_rgba(60,246,247,0.6)]"
+          >
+            op.elysium2026@gmail.com
+          </a>
         </p>
 
         {loading && (
           <p className="text-center text-sm text-gray-400">Loading...</p>
         )}
 
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {faqItems.map((faq) => (
             <FAQItem
               key={faq.id}
