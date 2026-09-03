@@ -52,7 +52,7 @@ function Dashboard() {
 
         <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
           <Metric
-            label="Total Registered"
+            label="Total Binded"
             value={loading ? "—" : stats.overall.total_main_registered}
             description="Main event registrations"
           />
