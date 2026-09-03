@@ -121,7 +121,7 @@ function Queue() {
 
   return (
     <>
-      {/* Hero Video Overlay with Low Power Mode Fallback */}
+      {/* Hero Video Overlay */}
       <motion.section
         initial={false}
         onClick={dismissHero}
@@ -137,7 +137,6 @@ function Queue() {
           ref={videoRef}
           className="h-full w-full object-cover"
           src="/Elysium-Logo.mp4"
-          poster="/Elysium-Logo.png" /* 👈 Shows glowing logo on Low Power Mode */
           autoPlay
           muted
           playsInline
@@ -146,7 +145,7 @@ function Queue() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 1 }}
+          transition={{ delay: 2, duration: 1 }}
           className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-pulse"
         >
           <p
