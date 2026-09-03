@@ -3,13 +3,16 @@ import Header from '../components/Header';
 import QueueingSystem from '../components/QueuingSystem';
 import WaitlistSystem from '../components/WaitlistSystem';
 import { motion } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../utils/supabase';
 
-// Make sure the hero video only plays once
+// Make sure the hero video only plays once per session
 let heroHasPlayed = false;
 
 function Queue() {
+  // Video ref for programmatic mobile autoplay
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   // Live State
   const [queueCount, setQueueCount] = useState<number>(0);
   const [waitingCount, setWaitingCount] = useState<number>(0);
@@ -46,6 +49,18 @@ function Queue() {
     setHeroDismissed(true);
     heroHasPlayed = true;
   };
+
+  // Force Autoplay on Mobile Devices (iOS & Android)
+  useEffect(() => {
+    if (videoRef.current && !heroDismissed) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {
+        // Fallback if browser battery saver strictly blocks autoplay
+        console.log('Mobile autoplay handled by user interaction.');
+      });
+    }
+  }, [heroDismissed]);
 
   // Live Count Polling Function
   const fetchLiveCounts = useCallback(async () => {
@@ -119,11 +134,13 @@ function Queue() {
         className="fixed inset-0 z-50 h-dvh w-full overflow-hidden cursor-pointer bg-black"
       >
         <video
+          ref={videoRef}
           className="h-full w-full object-cover"
           src="/Elysium-Logo.mp4"
           autoPlay
           muted
           playsInline
+          preload="auto"
         />
         <motion.div
           initial={{ opacity: 0 }}
@@ -210,7 +227,7 @@ function Queue() {
               </div>
             </div>
 
-            {/* Side-by-Side Action Buttons */}
+            {/* Side-by-Side Action Buttons with Darkened Inactive State */}
             <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
 
               {/* Button 1: Main Queue */}
