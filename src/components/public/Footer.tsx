@@ -3,89 +3,51 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="w-full bg-[#00081b] px-4 sm:px-6 py-4 mt-8 mb-12 sm:mb-16">
-      <div className="mx-auto max-w-6xl relative">
+    <footer className="w-full px-4 sm:px-6 py-4 mt-8 mb-12 sm:mb-16">
+      <div className="mx-auto max-w-6xl rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.2)] relative">
+        <div className="w-full h-full bg-[#090520]/85 backdrop-blur-md p-6 sm:p-8">
 
-        {/* Border, desktop only: image caps sized to match a short, wide
-        card. On mobile the card is much taller (columns stack), which would
-        stretch these caps into a broken, oversized shape — so they're
-        disabled below md and replaced with a simple CSS border instead. */}
-        <div className="pointer-events-none absolute inset-0 z-10 hidden items-stretch md:flex">
-          <img
-            src="/footer-border-left.png"
-            alt=""
-            className="h-full w-auto shrink-0 select-none"
-          />
-          <div className="relative flex-1">
-            <div
-              className="absolute top-0 left-0 right-0 h-0.5"
-              style={{ background: "linear-gradient(to right, rgb(111,187,247), rgb(131,66,245))" }}
-            />
-            <div
-              className="absolute bottom-0 left-0 right-0 h-0.5"
-              style={{ background: "linear-gradient(to right, rgb(111,187,247), rgb(131,66,245))" }}
-            />
-          </div>
-          <img
-            src="/footer-border-right.png"
-            alt=""
-            className="h-full w-auto shrink-0 select-none"
-          />
-        </div>
+          {/* Tech Corner Decorative Accents */}
+          <div className="absolute top-0 left-0 h-3.5 w-3.5 border-t-2 border-l-2 border-[#3cf6f7]" />
+          <div className="absolute top-0 right-0 h-3.5 w-3.5 border-t-2 border-r-2 border-[#3cf6f7]" />
+          <div className="absolute bottom-0 left-0 h-3.5 w-3.5 border-b-2 border-l-2 border-[#3cf6f7]" />
+          <div className="absolute bottom-0 right-0 h-3.5 w-3.5 border-b-2 border-r-2 border-[#3cf6f7]" />
 
-        {/* Border, mobile only: plain gradient-tinted border, since the
-        image caps above don't scale to a tall stacked layout. */}
-        <div
-          className="pointer-events-none absolute inset-0 z-10 rounded-lg md:hidden"
-          style={{
-            border: "1px solid transparent",
-            backgroundImage:
-              "linear-gradient(#00081b, #00081b), linear-gradient(180deg, rgb(111,187,247), rgb(131,66,245))",
-            backgroundOrigin: "border-box",
-            backgroundClip: "padding-box, border-box",
-          }}
-        />
+          {/* Top Content Row */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-8 items-center border-b border-[#3cf6f7]/20 pb-6">
 
-        {/* relative z-20 is required here — without it, the border divs
-        above (position:absolute + z-10) paint on top of this static
-        content and hide the logo/columns/copyright entirely. */}
-        <div className="relative z-20 w-full h-full bg-[#090520]/85 backdrop-blur-md p-3 sm:p-4">
-
-          {/* Top Content Row — tighter gap between columns, logo enlarged */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-3 items-center border-b border-cyan-400/20 pb-3">
-
-            {/* Col 1: Big Star Logo */}
+            {/* Col 1: Big Logo */}
             <div className="flex justify-center md:justify-start">
               <img
                 src="/Elysium-Logo.png"
                 alt="Elysium 2026"
-                className="h-72 sm:h-80 md:h-104 w-auto max-w-full object-contain drop-shadow-[0_0_20px_rgba(0,240,255,0.8)]"
+                className="h-28 sm:h-32 w-auto max-w-full object-contain drop-shadow-[0_0_15px_rgba(60,246,247,0.4)]"
               />
             </div>
 
             {/* Col 2: NAVIGATE */}
             <div>
-              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#00F0FF] mb-3 drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
+              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#3cf6f7] mb-3 drop-shadow-[0_0_5px_rgba(60,246,247,0.5)]">
                 NAVIGATE
               </h4>
               <ul className="space-y-2 text-xs font-futura-book tracking-wider text-gray-300">
                 <li>
-                  <Link to="/" className="hover:text-[#00F0FF] transition">
+                  <Link to="/" className="hover:text-[#3cf6f7] transition">
                     &gt; HOME
                   </Link>
                 </li>
                 <li>
-                  <Link to="/" className="hover:text-[#00F0FF] transition">
+                  <Link to="/" className="hover:text-[#3cf6f7] transition">
                     &gt; QUEUE
                   </Link>
                 </li>
                 <li>
-                  <Link to="/faq" className="hover:text-[#00F0FF] transition">
+                  <Link to="/faq" className="hover:text-[#3cf6f7] transition">
                     &gt; FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link to="/prizes" className="hover:text-[#00F0FF] transition">
+                  <Link to="/prizes" className="hover:text-[#3cf6f7] transition">
                     &gt; MERCH &amp; LUCKY DRAW
                   </Link>
                 </li>
@@ -94,7 +56,7 @@ function Footer() {
 
             {/* Col 3: CONNECT */}
             <div>
-              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#00F0FF] mb-3 drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
+              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#3cf6f7] mb-3 drop-shadow-[0_0_5px_rgba(60,246,247,0.5)]">
                 CONNECT
               </h4>
               <ul className="space-y-2 text-xs font-futura-book tracking-wider text-gray-300">
@@ -103,7 +65,7 @@ function Footer() {
                     href="https://www.instagram.com/orientation.tlc/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-[#00F0FF] transition"
+                    className="hover:text-[#3cf6f7] transition"
                   >
                     &gt; INSTAGRAM
                   </a>
@@ -113,7 +75,7 @@ function Footer() {
                     href="https://www.facebook.com/Orientation.TLC/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:text-[#00F0FF] transition"
+                    className="hover:text-[#3cf6f7] transition"
                   >
                     &gt; FACEBOOK
                   </a>
@@ -121,7 +83,7 @@ function Footer() {
                 <li>
                   <a
                     href="mailto:op.elysium2026@gmail.com"
-                    className="hover:text-[#00F0FF] transition"
+                    className="hover:text-[#3cf6f7] transition"
                   >
                     &gt; EMAIL
                   </a>
@@ -131,7 +93,7 @@ function Footer() {
 
             {/* Col 4: LOCATION */}
             <div>
-              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#00F0FF] mb-3 drop-shadow-[0_0_5px_rgba(0,240,255,0.5)]">
+              <h4 className="text-xs font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#3cf6f7] mb-3 drop-shadow-[0_0_5px_rgba(60,246,247,0.5)]">
                 LOCATION
               </h4>
               <div className="flex items-start gap-2 text-xs font-futura-book tracking-wider text-gray-300">
@@ -140,8 +102,8 @@ function Footer() {
                   fill="none"
                   viewBox="0 0 24 24"
                   strokeWidth={1.8}
-                  stroke="#00F0FF"
-                  className="w-5 h-5 shrink-0 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]"
+                  stroke="#3cf6f7"
+                  className="w-5 h-5 shrink-0 drop-shadow-[0_0_5px_rgba(60,246,247,0.8)]"
                 >
                   <path
                     strokeLinecap="round"
@@ -164,7 +126,7 @@ function Footer() {
           </div>
 
           {/* Bottom Copyright */}
-          <div className="pt-3 text-center text-[10px] font-futura-medium tracking-[0.25em] text-gray-400 uppercase">
+          <div className="pt-4 text-center text-[10px] font-futura-medium tracking-[0.25em] text-gray-400 uppercase">
             @ 2026 ELYSIUM: ORIENTATION PARTY 2026 . ALL RIGHTS RESERVED
           </div>
 
