@@ -92,7 +92,7 @@ function Admin() {
   return (
     <main
       className="relative flex min-h-screen items-center justify-center overflow-hidden bg-cover bg-center px-6 py-12"
-      style={{ backgroundImage: "url('/temp-bg.jpg')" }}
+      style={{ backgroundImage: "url('/bg.png')" }}
     >
       {/* Darken and tint the background for readability, without editing the image itself */}
       <div
