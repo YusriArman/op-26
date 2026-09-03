@@ -1,6 +1,5 @@
 // src/pages/Home.tsx
 import Header from '../components/Header';
-import Footer from '../components/public/Footer';
 import QueueingSystem from '../components/QueuingSystem';
 import WaitlistSystem from '../components/WaitlistSystem';
 import { motion } from 'framer-motion';
@@ -274,8 +273,6 @@ function Queue() {
 
         </div>
 
-        {/* Global Footer (Rendered directly) */}
-        <Footer />
       </main>
 
       {/* Main Registration Modal */}
