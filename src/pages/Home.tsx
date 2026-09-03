@@ -128,7 +128,7 @@ function Queue() {
             <img
               src="/Elysium-Logo.png"
               alt="Elysium 2026"
-              className="w-96 sm:w-[36rem] md:w-[44rem] lg:w-[52rem] max-w-full object-contain drop-shadow-[0_0_12px_rgba(0,240,255,0.35)] [clip-path:inset(8%_0_8%_0)]"
+              className="w-96 sm:w-[36rem] md:w-[44rem] lg:w-[52rem] max-w-full object-contain drop-shadow-[0_0_12px_rgba(0,240,255,0.35)]"
             />
           </div>
 
@@ -147,11 +147,11 @@ function Queue() {
                   style={{ width: `${Math.max(4, queuePct)}%` }}
                 >
                   {/* Mascot riding the tip of the progress bar */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
                     <img
-                      src="/Elysium-Logo.png"
-                      alt="Queue Mascot"
-                      className="h-7 w-7 rounded-full object-cover border border-cyan-400 drop-shadow-[0_0_8px_rgba(0,240,255,1)]"
+                      src="/rolby-loading.png"
+                      alt="Waitlist Mascot"
+                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(0,240,255,1)]"
                     />
                   </div>
                 </div>
@@ -170,11 +170,11 @@ function Queue() {
                   style={{ width: `${Math.max(4, waitingPct)}%` }}
                 >
                   {/* Mascot riding the tip of the waitlist progress bar */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
                     <img
-                      src="/Elysium-Logo.png"
+                      src="/rolby-loading.png"
                       alt="Waitlist Mascot"
-                      className="h-7 w-7 rounded-full object-cover border border-cyan-400 drop-shadow-[0_0_8px_rgba(0,240,255,1)]"
+                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(0,240,255,1)]"
                     />
                   </div>
                 </div>
