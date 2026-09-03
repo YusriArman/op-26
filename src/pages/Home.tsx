@@ -37,7 +37,7 @@ function Queue() {
     ? 'Waitlist Full'
     : queueFull
       ? 'Enter Waitlist'
-      : 'Waitlist Opens at 1,500';
+      : 'Waitlist (Opens at 1,500)';
 
   // Transition animation for Hero video
   const [heroDismissed, setHeroDismissed] = useState(heroHasPlayed);
@@ -210,7 +210,7 @@ function Queue() {
               </div>
             </div>
 
-            {/* Side-by-Side Action Buttons with Text Shadows */}
+            {/* Side-by-Side Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
 
               {/* Button 1: Main Queue */}
@@ -218,8 +218,8 @@ function Queue() {
                 onClick={() => setShowQueueModal(true)}
                 disabled={!canQueue}
                 className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canQueue
-                  ? 'text-white [text-shadow:0_0_8px_rgba(60,246,247,0.9)] bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7] shadow-[0_0_20px_rgba(60,246,247,0.3)] cursor-pointer'
-                  : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
+                    ? 'text-white [text-shadow:0_0_8px_rgba(60,246,247,0.7)] bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7] shadow-[0_0_20px_rgba(60,246,247,0.3)] cursor-pointer'
+                    : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
                   }`}
               >
                 {queueButtonLabel}
@@ -230,8 +230,8 @@ function Queue() {
                 onClick={() => setShowWaitlistModal(true)}
                 disabled={!canWaitlist}
                 className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canWaitlist
-                  ? 'text-white [text-shadow:0_0_8px_rgba(225,57,250,0.9)] bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa] shadow-[0_0_20px_rgba(225,57,250,0.3)] cursor-pointer'
-                  : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
+                    ? 'text-white [text-shadow:0_0_8px_rgba(225,57,250,0.7)] bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa] shadow-[0_0_20px_rgba(225,57,250,0.3)] cursor-pointer'
+                    : 'text-gray-400 [text-shadow:0_1px_2px_rgba(0,0,0,0.8)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
                   }`}
               >
                 {waitlistButtonLabel}
