@@ -1,11 +1,96 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* Futura Std Fonts */
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Book.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Book.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Medium.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Heavy.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Heavy.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Futura Std';
+  src: url('/FuturaStd-Heavy.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+.font-futura-book {
+  font-family: 'Futura Std', system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.font-futura-medium {
+  font-family: 'Futura Std', system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.font-futura-heavy {
+  font-family: 'Futura Std', system-ui, sans-serif;
+  font-weight: 800;
+}
+
+html,
+body {
+  font-family: 'Futura Std', system-ui, -apple-system, sans-serif;
+  background-color: #00081b;
+  color: #ffffff;
+  overscroll-behavior: none;
+  letter-spacing: 0.03em;
+}
+
 /* For ADMIN */
 .font-display {
   font-family: 'Space Grotesk', system-ui, sans-serif;
 }
- 
+
 /* Applied once, on the AdminLayout wrapper only */
 .bg-gradient-admin {
   min-height: 100vh;
@@ -16,22 +101,24 @@
   background-attachment: fixed;
   color: #EAF0FF;
 }
- 
+
 /* Glass card used by all admin components */
 .glass-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
 }
- 
+
 /* Scoped scrollbar, only applies inside elements with this class */
 .admin-scrollbar::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
+
 .admin-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .admin-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 8px;

@@ -21,8 +21,12 @@ function Queue() {
   const buttonLabel = waitlistFull
     ? 'All Passes & Waitlist Full'
     : queueFull
-      ? 'Click to Join Waiting List'
+      ? 'Join Waiting List'
       : 'Click to Queue';
+
+  // Calculate clamped percentage for progress bars (0% to 100%)
+  const queuePct = Math.min(100, Math.max(0, (queueCount / maxTickets) * 100));
+  const waitingPct = Math.min(100, Math.max(0, (waitingCount / maxWaiting) * 100));
 
   // Transition animation for Hero video
   const [heroDismissed, setHeroDismissed] = useState(false);
@@ -49,39 +53,11 @@ function Queue() {
   }, []);
 
   // Poll counts on load and every 10 seconds
-    useEffect(() => {
-      let cancelled = false;
-
-      async function poll() {
-        try {
-          const { data, error } = await supabase
-            .from('admin_overall_metrics')
-            .select('total_main_registered, total_waitlisted')
-            .single();
-
-          if (cancelled) return;
-
-          if (error) {
-            console.error('Error fetching live counts:', error.message);
-          } else if (data) {
-            setQueueCount(data.total_main_registered || 0);
-            setWaitingCount(data.total_waitlisted || 0);
-          }
-        } catch (err) {
-          if (!cancelled) console.error('Failed to poll metrics:', err);
-        } finally {
-          if (!cancelled) setLoadingStats(false);
-        }
-      }
-
-      poll();
-      const interval = setInterval(poll, 10000);
-
-      return () => {
-        cancelled = true;
-        clearInterval(interval);
-      };
-    }, []);
+  useEffect(() => {
+    fetchLiveCounts();
+    const interval = setInterval(fetchLiveCounts, 10000);
+    return () => clearInterval(interval);
+  }, [fetchLiveCounts]);
 
   // Video dismiss listeners
   useEffect(() => {
@@ -102,12 +78,12 @@ function Queue() {
 
   return (
     <>
-      {/* Hero Video */}
+      {/* Hero Video Overlay */}
       <motion.section
         onClick={() => setHeroDismissed(true)}
         animate={{
           opacity: heroDismissed ? 0 : 1,
-          scale: heroDismissed ? 1.1 : 1,
+          scale: heroDismissed ? 1.05 : 1,
         }}
         transition={{ duration: 0.8 }}
         style={{ pointerEvents: heroDismissed ? 'none' : 'auto' }}
@@ -127,101 +103,171 @@ function Queue() {
           className="absolute bottom-12 left-1/2 -translate-x-1/2 animate-pulse"
         >
           <p
-            className="text-sm font-light uppercase tracking-[0.3em] text-white"
-            style={{ textShadow: '0 0 8px rgba(255,255,255,0.8)' }}
+            className="text-xs sm:text-sm font-futura-book uppercase tracking-[0.3em] text-[#00F0FF]"
+            style={{ textShadow: '0 0 12px rgba(0,240,255,0.8)' }}
           >
             Click to Enter Elysium
           </p>
         </motion.div>
       </motion.section>
 
-      <Header
-        title="ELYSIUM: ORIENTATION PARTY 2026"
-        description="Ticket Queue"
-      />
+      {/* Main Page Layout */}
+      <main className="w-full min-h-screen bg-[linear-gradient(to_bottom,rgba(0,8,27,0.58),rgba(0,8,27,0.50),rgba(0,8,27,0.65)),url('/bg.png')] bg-cover bg-center bg-fixed text-white flex flex-col justify-between">
 
-      <main className="w-full min-h-screen bg-[url('/temp-bg.jpg')] bg-cover bg-center bg-fixed">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          {/* Hero / Banner */}
-          <section className="h-48 rounded-lg bg-gray-300 flex items-center justify-center">
-            <span className="text-gray-500 font-medium">Elysium 2026 Official Banner</span>
-          </section>
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 pt-2 sm:pt-4">
 
-          {/* Ticket Queue Section */}
-          <section className="mt-6 rounded-lg bg-gray-200/90 backdrop-blur p-6 shadow-md">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Main Ticket Queue
-              </h2>
-              {loadingStats && (
-                <span className="text-xs text-gray-500 animate-pulse">
-                  Syncing live queue...
-                </span>
-              )}
-            </div>
+          {/* Header Section */}
+          <Header
+            title="ELYSIUM: ORIENTATION PARTY 2026"
+            description="Welcome Freshmen! Secure your official entrance pass and choose your physical ticket collection timeslot for Taylor's Grand Hall (TGH) or Lecture Theatre 1 (LT1)"
+            align="center"
+          />
 
-            <p className="mt-2 text-gray-600 text-sm">
-              Be sure to select and arrive at your ticket collection slot on time!
-            </p>
+          {/* Large Glowing Center Logo */}
+          <div className="-mt-2 sm:-mt-3 mb-1 sm:mb-2 flex justify-center overflow-hidden">
+            <img
+              src="/Elysium-Logo.png"
+              alt="Elysium 2026"
+              className="w-96 sm:w-[36rem] md:w-[44rem] lg:w-[52rem] max-w-full object-contain drop-shadow-[0_0_12px_rgba(0,240,255,0.35)] [clip-path:inset(8%_0_8%_0)]"
+            />
+          </div>
 
-            <div className="mt-6">
-              <div className="flex justify-between text-sm text-gray-700">
-                <span>Passes Claimed:</span>
-                <span className="font-semibold">
-                  {queueCount} / {maxTickets}
-                </span>
+          {/* Progress Bars & Queue Section */}
+          <section className="space-y-6 max-w-3xl mx-auto">
+
+            {/* 1. Main Queue Progress Bar */}
+            <div className="space-y-2 text-center">
+              <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-cyan-300 drop-shadow-[0_0_6px_rgba(0,240,255,0.6)]">
+                Event Limit: {queueCount}/{maxTickets} Queuing
               </div>
 
-              <div className="mt-2 h-3 w-full rounded-full bg-gray-300 overflow-hidden">
+              <div className="relative h-6 w-full rounded-full bg-white/20 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                 <div
-                  className="h-3 rounded-full bg-black transition-all duration-500 ease-out"
-                  style={{ width: `${Math.min(100, (queueCount / maxTickets) * 100)}%` }}
-                />
+                  className="h-full rounded-full bg-gradient-to-r from-[#E000FF] via-[#FA26A0] to-[#2596be] shadow-[0_0_15px_rgba(250,38,160,0.8)] transition-all duration-700 ease-out relative"
+                  style={{ width: `${Math.max(4, queuePct)}%` }}
+                >
+                  {/* Mascot riding the tip of the progress bar */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
+                    <img
+                      src="/Elysium-Logo.png"
+                      alt="Queue Mascot"
+                      className="h-7 w-7 rounded-full object-cover border border-cyan-400 drop-shadow-[0_0_8px_rgba(0,240,255,1)]"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Action Button */}
-            <button
-              onClick={() => setShowQueueModal(true)}
-              disabled={waitlistFull}
-              className={`mt-6 w-full rounded-lg py-3.5 font-semibold text-white transition shadow ${waitlistFull
-                  ? 'cursor-not-allowed bg-gray-400'
+            {/* 2. Waiting List Progress Bar */}
+            <div className="space-y-2 text-center pt-2">
+              <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-cyan-300 drop-shadow-[0_0_6px_rgba(0,240,255,0.6)]">
+                Waiting List: {waitingCount}/{maxWaiting} Waiting
+              </div>
+
+              <div className="relative h-6 w-full rounded-full bg-white/20 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-[#E000FF] via-[#FA26A0] to-[#2596be] shadow-[0_0_15px_rgba(250,38,160,0.8)] transition-all duration-700 ease-out relative"
+                  style={{ width: `${Math.max(4, waitingPct)}%` }}
+                >
+                  {/* Mascot riding the tip of the waitlist progress bar */}
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
+                    <img
+                      src="/Elysium-Logo.png"
+                      alt="Waitlist Mascot"
+                      className="h-7 w-7 rounded-full object-cover border border-cyan-400 drop-shadow-[0_0_8px_rgba(0,240,255,1)]"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Queue Button */}
+            <div className="pt-4 flex justify-center">
+              <button
+                onClick={() => setShowQueueModal(true)}
+                disabled={waitlistFull}
+                className={`w-full sm:w-80 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(224,0,255,0.4)] ${waitlistFull
+                  ? 'cursor-not-allowed bg-gray-600/60 border border-gray-500'
                   : queueFull
-                    ? 'bg-amber-600 hover:bg-amber-700'
-                    : 'bg-black hover:bg-gray-800'
-                }`}
-            >
-              {buttonLabel}
-            </button>
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:shadow-[0_0_25px_rgba(250,38,160,0.8)] border border-pink-400'
+                    : 'bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 hover:shadow-[0_0_25px_rgba(0,240,255,0.8)] border border-cyan-400'
+                  }`}
+              >
+                {loadingStats ? 'Syncing Queue...' : buttonLabel}
+              </button>
+            </div>
+
           </section>
 
-          {/* Waiting List Section */}
-          <section className="mt-6 rounded-lg bg-gray-200/90 backdrop-blur p-6 shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Waiting List Queue
-            </h2>
+          {/* HOW TICKET QUEUING WORKS? (Tech Container) */}
+          <section className="mt-14 sm:mt-20 mb-14 sm:mb-20 rounded-none p-[1px] bg-gradient-to-r from-[#00F0FF]/50 via-[#E000FF]/50 to-[#2596be]/50 shadow-[0_0_25px_rgba(0,240,255,0.2)] relative">
+            <div className="w-full h-full bg-[#090520]/75 backdrop-blur-md p-6 sm:p-8">
+              {/* Corner Tech Accents */}
+              <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#00F0FF]" />
+              <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#00F0FF]" />
+              <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#00F0FF]" />
+              <div className="absolute bottom-0 right-0 h-3 w-3 border-b-2 border-r-2 border-[#00F0FF]" />
 
-            <p className="mt-2 text-gray-600 text-sm">
-              Opens automatically when the 1,500 main queue limit is reached.
-            </p>
+              <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.25em] text-[#00F0FF] drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]">
+                HOW TICKET QUEUING WORKS?
+              </h3>
+              <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                Follow these simple steps to ensure a smooth ticket collection process:
+              </p>
 
-            <div className="mt-6">
-              <div className="flex justify-between text-sm text-gray-700">
-                <span>Waitlisted Freshmen:</span>
-                <span className="font-semibold">
-                  {waitingCount} / {maxWaiting}
-                </span>
-              </div>
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
 
-              <div className="mt-2 h-3 w-full rounded-full bg-gray-300 overflow-hidden">
-                <div
-                  className="h-3 rounded-full bg-amber-600 transition-all duration-500 ease-out"
-                  style={{ width: `${Math.min(100, (waitingCount / maxWaiting) * 100)}%` }}
-                />
+                {/* Step 1 */}
+                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#00F0FF] hover:to-[#2596be]">
+                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-xs font-futura-heavy font-bold text-white mb-2">
+                      1
+                    </div>
+                    <h4 className="text-sm font-futura-heavy font-bold text-cyan-300 uppercase tracking-[0.15em]">
+                      REGISTER DETAILS
+                    </h4>
+                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                      Provide your Student ID (SID), Full Name, Taylor's Email, and Personal Email.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#00F0FF] hover:to-[#2596be]">
+                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-xs font-futura-heavy font-bold text-white mb-2">
+                      2
+                    </div>
+                    <h4 className="text-sm font-futura-heavy font-bold text-cyan-300 uppercase tracking-[0.15em]">
+                      SELECT COLLECTION SLOT
+                    </h4>
+                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                      Choose an available date and time slot for collection at Taylor's Grand Hall or Lecture Theatre 1.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#00F0FF] hover:to-[#2596be]">
+                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-xs font-futura-heavy font-bold text-white mb-2">
+                      3
+                    </div>
+                    <h4 className="text-sm font-futura-heavy font-bold text-cyan-300 uppercase tracking-[0.15em]">
+                      PHYSICAL COLLECTION
+                    </h4>
+                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                      Bring your Student ID to the venue during your assigned slot to collect your physical pass.
+                    </p>
+                  </div>
+                </div>
+
               </div>
             </div>
           </section>
+
         </div>
+
       </main>
 
       {/* Queue Registration Modal */}
@@ -229,7 +275,7 @@ function Queue() {
         isOpen={showQueueModal}
         onClose={() => setShowQueueModal(false)}
         onSuccess={() => {
-          fetchLiveCounts(); // Instantly refresh live counters on registration success
+          fetchLiveCounts(); // Instantly update progress bar upon successful registration
         }}
         isWaitlistOnly={queueFull}
       />
