@@ -6,43 +6,60 @@ function Footer() {
     <footer className="w-full bg-[#00081b] px-4 sm:px-6 py-4 mt-8 mb-12 sm:mb-16">
       <div className="mx-auto max-w-6xl relative">
 
-        {/* Border: caps + gradient bar, laid out as a flex row so the bar only
-      ever fills the actual gap between the caps — no overlap, no guessing */}
-        <div className="pointer-events-none absolute inset-0 z-10 flex items-stretch">
+        {/* Border, desktop only: image caps sized to match a short, wide
+        card. On mobile the card is much taller (columns stack), which would
+        stretch these caps into a broken, oversized shape — so they're
+        disabled below md and replaced with a simple CSS border instead. */}
+        <div className="pointer-events-none absolute inset-0 z-10 hidden items-stretch md:flex">
           <img
             src="/footer-border-left.png"
             alt=""
-            className="h-full w-auto flex-shrink-0 select-none"
+            className="h-full w-auto shrink-0 select-none"
           />
           <div className="relative flex-1">
             <div
-              className="absolute top-0 left-0 right-0 h-[2px]"
+              className="absolute top-0 left-0 right-0 h-0.5"
               style={{ background: "linear-gradient(to right, rgb(111,187,247), rgb(131,66,245))" }}
             />
             <div
-              className="absolute bottom-0 left-0 right-0 h-[2px]"
+              className="absolute bottom-0 left-0 right-0 h-0.5"
               style={{ background: "linear-gradient(to right, rgb(111,187,247), rgb(131,66,245))" }}
             />
           </div>
           <img
             src="/footer-border-right.png"
             alt=""
-            className="h-full w-auto flex-shrink-0 select-none"
+            className="h-full w-auto shrink-0 select-none"
           />
         </div>
 
+        {/* Border, mobile only: plain gradient-tinted border, since the
+        image caps above don't scale to a tall stacked layout. */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 rounded-lg md:hidden"
+          style={{
+            border: "1px solid transparent",
+            backgroundImage:
+              "linear-gradient(#00081b, #00081b), linear-gradient(180deg, rgb(111,187,247), rgb(131,66,245))",
+            backgroundOrigin: "border-box",
+            backgroundClip: "padding-box, border-box",
+          }}
+        />
 
-        <div className="w-full h-full bg-[#090520]/85 backdrop-blur-md p-3 sm:p-4">
+        {/* relative z-20 is required here — without it, the border divs
+        above (position:absolute + z-10) paint on top of this static
+        content and hide the logo/columns/copyright entirely. */}
+        <div className="relative z-20 w-full h-full bg-[#090520]/85 backdrop-blur-md p-3 sm:p-4">
 
-          {/* Top Content Row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center border-b border-cyan-400/20 pb-3">
+          {/* Top Content Row — tighter gap between columns, logo enlarged */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 sm:gap-3 items-center border-b border-cyan-400/20 pb-3">
 
             {/* Col 1: Big Star Logo */}
             <div className="flex justify-center md:justify-start">
               <img
                 src="/Elysium-Logo.png"
                 alt="Elysium 2026"
-                className="h-48 sm:h-56 md:h-60 w-auto object-contain drop-shadow-[0_0_20px_rgba(0,240,255,0.8)]"
+                className="h-72 sm:h-80 md:h-104 w-auto max-w-full object-contain drop-shadow-[0_0_20px_rgba(0,240,255,0.8)]"
               />
             </div>
 
@@ -83,7 +100,7 @@ function Footer() {
               <ul className="space-y-2 text-xs font-futura-book tracking-wider text-gray-300">
                 <li>
                   <a
-                    href="https://instagram.com"
+                    href="https://www.instagram.com/orientation.tlc/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-[#00F0FF] transition"
@@ -93,7 +110,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://facebook.com"
+                    href="https://www.facebook.com/Orientation.TLC/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-[#00F0FF] transition"
@@ -103,7 +120,7 @@ function Footer() {
                 </li>
                 <li>
                   <a
-                    href="mailto:elysium@gmail.com"
+                    href="mailto:op.elysium2026@gmail.com"
                     className="hover:text-[#00F0FF] transition"
                   >
                     &gt; EMAIL
@@ -124,7 +141,7 @@ function Footer() {
                   viewBox="0 0 24 24"
                   strokeWidth={1.8}
                   stroke="#00F0FF"
-                  className="w-5 h-5 flex-shrink-0 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]"
+                  className="w-5 h-5 shrink-0 drop-shadow-[0_0_5px_rgba(0,240,255,0.8)]"
                 >
                   <path
                     strokeLinecap="round"

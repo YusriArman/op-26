@@ -106,7 +106,7 @@ function Queue() {
         }}
         transition={{ duration: 0.8 }}
         style={{ pointerEvents: heroDismissed ? 'none' : 'auto' }}
-        className="fixed inset-0 z-50 h-screen w-full overflow-hidden cursor-pointer bg-black"
+        className="fixed inset-0 z-50 h-dvh w-full overflow-hidden cursor-pointer bg-black"
       >
         <video
           className="h-full w-full object-cover"
