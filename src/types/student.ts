@@ -31,16 +31,6 @@ export interface AttendedStudentRecord {
   student_id: string;
   ticket_id: string | null;
   full_name: string;
-  email: string | null;
+  email: string;
 }
 
-export interface CollectionSlot {
-  id: string;
-  venue: Venue;
-  slot_date: string;
-  start_time: string;
-  end_time: string;
-  max_capacity: number;
-  booked_count: number;
-  created_at?: string;
-}
