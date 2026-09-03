@@ -21,7 +21,11 @@ function Dashboard() {
   const chartData = [
     { name: "Day 1 (TGH)", registered: stats.day1.registered, attended: stats.day1.attended },
     { name: "Day 2 (LT1)", registered: stats.day2.registered, attended: stats.day2.attended },
-    { name: "Waitlist", registered: stats.waitlist.registered, attended: stats.waitlist.attended },
+    {
+      name: "Waitlist",
+      registered: stats.waitlist.registered + stats.waitlist.promoted,
+      attended: stats.waitlist.attended + stats.waitlist.promotedAttended,
+    },
   ];
 
   return (
@@ -125,10 +129,11 @@ function Dashboard() {
           />
 
           <WaitlistCard
-            registered={loading ? 0 : stats.waitlist.registered}
-            attended={loading ? 0 : stats.waitlist.attended}
+            totalRegistered={loading ? 0 : stats.waitlist.registered + stats.waitlist.promoted}
+            onWaitlist={loading ? 0 : stats.waitlist.registered}
             capacity={stats.waitlist.capacity}
             available={loading ? stats.waitlist.capacity : stats.waitlist.available}
+            promoted={loading ? 0 : stats.waitlist.promoted}
           />
         </div>
       </section>
