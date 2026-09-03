@@ -6,6 +6,9 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
 
+// Make sure the hero video only plays once
+let heroHasPlayed = false;
+
 function Queue() {
   // Live State
   const [queueCount, setQueueCount] = useState<number>(0);
@@ -26,7 +29,12 @@ function Queue() {
   const waitingPct = Math.min(100, Math.max(0, (waitingCount / maxWaiting) * 100));
 
   // Transition animation for Hero video
-  const [heroDismissed, setHeroDismissed] = useState(false);
+  const [heroDismissed, setHeroDismissed] = useState(heroHasPlayed);
+
+  const dismissHero = () => {
+    setHeroDismissed(true);
+    heroHasPlayed = true;
+  };
 
   // Live Count Polling Function
   const fetchLiveCounts = useCallback(async () => {
@@ -58,7 +66,7 @@ function Queue() {
   useEffect(() => {
     if (heroDismissed) return;
 
-    const dismiss = () => setHeroDismissed(true);
+    const dismiss = () => dismissHero();
 
     window.addEventListener('wheel', dismiss, { passive: true });
     window.addEventListener('keydown', dismiss);
@@ -75,7 +83,8 @@ function Queue() {
     <>
       {/* Hero Video Overlay */}
       <motion.section
-        onClick={() => setHeroDismissed(true)}
+        initial={false}
+        onClick={dismissHero}
         animate={{
           opacity: heroDismissed ? 0 : 1,
           scale: heroDismissed ? 1.05 : 1,
@@ -86,7 +95,7 @@ function Queue() {
       >
         <video
           className="h-full w-full object-cover"
-          src="/Elysium-Logo1.mp4"
+          src="/Elysium-Logo.mp4"
           autoPlay
           muted
           playsInline
