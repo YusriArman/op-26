@@ -273,7 +273,7 @@ export default function QueueingSystem({
 
                             <button
                                 onClick={onClose}
-                                className="mt-6 w-full rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white shadow-[0_0_20px_rgba(60,246,247,0.4)] transition"
+                                className="mt-6 w-full rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(60,246,247,0.9)] shadow-[0_0_20px_rgba(60,246,247,0.4)] transition"
                             >
                                 Done
                             </button>
@@ -419,14 +419,14 @@ export default function QueueingSystem({
                                     type="button"
                                     onClick={onClose}
                                     disabled={submitting}
-                                    className="rounded-none border border-[#6045f4]/50 px-4 py-2.5 text-xs font-futura-medium text-gray-300 hover:text-white hover:bg-[#6045f4]/30 transition"
+                                    className="rounded-none border border-[#6045f4]/50 px-4 py-2.5 text-xs font-futura-medium text-gray-300 [text-shadow:0_1px_3px_rgba(0,0,0,0.8)] hover:text-white hover:bg-[#6045f4]/30 transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting || (!isWaitlistOnly && !selectedSlotId)}
-                                    className="rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(60,246,247,0.4)] transition flex items-center gap-2"
+                                    className="rounded-none bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(60,246,247,0.9)] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(60,246,247,0.4)] transition flex items-center gap-2"
                                 >
                                     {submitting ? (
                                         <>

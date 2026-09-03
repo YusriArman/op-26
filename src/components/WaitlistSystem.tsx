@@ -180,7 +180,7 @@ export default function WaitlistSystem({
 
                             <button
                                 onClick={onClose}
-                                className="mt-6 w-full rounded-none bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-purple-500 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white shadow-[0_0_20px_rgba(250,38,160,0.4)] transition"
+                                className="mt-6 w-full rounded-none bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-purple-500 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(250,38,160,0.9)] shadow-[0_0_20px_rgba(250,38,160,0.4)] transition"
                             >
                                 Done
                             </button>
@@ -269,14 +269,14 @@ export default function WaitlistSystem({
                                     type="button"
                                     onClick={onClose}
                                     disabled={submitting}
-                                    className="rounded-none border border-pink-500/40 px-4 py-2.5 text-xs font-futura-medium text-gray-300 hover:text-white hover:bg-pink-900/30 transition"
+                                    className="rounded-none border border-pink-500/40 px-4 py-2.5 text-xs font-futura-medium text-gray-300 [text-shadow:0_1px_3px_rgba(0,0,0,0.8)] hover:text-white hover:bg-pink-900/30 transition"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="rounded-none bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-purple-500 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(250,38,160,0.4)] transition flex items-center gap-2"
+                                    className="rounded-none bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-purple-500 px-6 py-2.5 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(250,38,160,0.9)] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(250,38,160,0.4)] transition flex items-center gap-2"
                                 >
                                     {submitting ? (
                                         <>
