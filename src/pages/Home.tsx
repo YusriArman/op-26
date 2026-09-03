@@ -1,6 +1,8 @@
 // src/pages/Home.tsx
 import Header from '../components/Header';
+import Footer from '../components/public/Footer';
 import QueueingSystem from '../components/QueuingSystem';
+import WaitlistSystem from '../components/WaitlistSystem';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../utils/supabase';
@@ -10,19 +12,16 @@ function Queue() {
   const [queueCount, setQueueCount] = useState<number>(0);
   const [waitingCount, setWaitingCount] = useState<number>(0);
   const [loadingStats, setLoadingStats] = useState<boolean>(true);
+
+  // Modals State
   const [showQueueModal, setShowQueueModal] = useState<boolean>(false);
+  const [showWaitlistModal, setShowWaitlistModal] = useState<boolean>(false);
 
   const maxTickets = 1500;
   const maxWaiting = 500;
 
   const queueFull = queueCount >= maxTickets;
   const waitlistFull = waitingCount >= maxWaiting;
-
-  const buttonLabel = waitlistFull
-    ? 'All Passes & Waitlist Full'
-    : queueFull
-      ? 'Join Waiting List'
-      : 'Click to Queue';
 
   // Calculate clamped percentage for progress bars (0% to 100%)
   const queuePct = Math.min(100, Math.max(0, (queueCount / maxTickets) * 100));
@@ -112,7 +111,7 @@ function Queue() {
       </motion.section>
 
       {/* Main Page Layout */}
-      <main className="w-full min-h-screen bg-[linear-gradient(to_bottom,rgba(0,8,27,0.58),rgba(0,8,27,0.50),rgba(0,8,27,0.65)),url('/bg.png')] bg-cover bg-center bg-fixed text-white flex flex-col justify-between">
+      <main className="w-full min-h-screen bg-[linear-gradient(to_bottom,rgba(0,8,27,0.7),rgba(0,8,27,0.50),rgba(0,8,27,0.65)),url('/bg.png')] bg-cover bg-center bg-fixed text-white flex flex-col justify-between">
 
         <div className="mx-auto max-w-5xl px-4 sm:px-6 pt-2 sm:pt-4">
 
@@ -146,11 +145,10 @@ function Queue() {
                   className="h-full rounded-full bg-gradient-to-r from-[#E000FF] via-[#FA26A0] to-[#2596be] shadow-[0_0_15px_rgba(250,38,160,0.8)] transition-all duration-700 ease-out relative"
                   style={{ width: `${Math.max(4, queuePct)}%` }}
                 >
-                  {/* Mascot riding the tip of the progress bar */}
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
                     <img
                       src="/rolby-loading.png"
-                      alt="Waitlist Mascot"
+                      alt="Main Queue Mascot"
                       className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(0,240,255,1)]"
                     />
                   </div>
@@ -169,7 +167,6 @@ function Queue() {
                   className="h-full rounded-full bg-gradient-to-r from-[#E000FF] via-[#FA26A0] to-[#2596be] shadow-[0_0_15px_rgba(250,38,160,0.8)] transition-all duration-700 ease-out relative"
                   style={{ width: `${Math.max(4, waitingPct)}%` }}
                 >
-                  {/* Mascot riding the tip of the waitlist progress bar */}
                   <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
                     <img
                       src="/rolby-loading.png"
@@ -181,20 +178,33 @@ function Queue() {
               </div>
             </div>
 
-            {/* Action Queue Button */}
-            <div className="pt-4 flex justify-center">
+            {/* Side-by-Side Action Buttons */}
+            <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+
+              {/* Button 1: Main Queue */}
               <button
                 onClick={() => setShowQueueModal(true)}
-                disabled={waitlistFull}
-                className={`w-full sm:w-80 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(224,0,255,0.4)] ${waitlistFull
-                  ? 'cursor-not-allowed bg-gray-600/60 border border-gray-500'
-                  : queueFull
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 hover:shadow-[0_0_25px_rgba(250,38,160,0.8)] border border-pink-400'
-                    : 'bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 hover:shadow-[0_0_25px_rgba(0,240,255,0.8)] border border-cyan-400'
+                disabled={queueFull}
+                className={`w-full sm:w-64 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(0,240,255,0.3)] ${queueFull
+                  ? 'cursor-not-allowed bg-gray-600/50 border border-gray-500 text-gray-400'
+                  : 'bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 hover:shadow-[0_0_25px_rgba(0,240,255,0.8)] border border-cyan-400'
                   }`}
               >
-                {loadingStats ? 'Syncing Queue...' : buttonLabel}
+                {queueFull ? 'Main Queue Full' : 'Click to Queue'}
               </button>
+
+              {/* Button 2: Enter Waitlist (Enabled for testing) */}
+              <button
+                onClick={() => setShowWaitlistModal(true)}
+                disabled={waitlistFull}
+                className={`w-full sm:w-64 rounded-none py-3.5 px-6 font-futura-heavy font-bold uppercase tracking-[0.15em] text-white transition-all duration-300 shadow-[0_0_20px_rgba(224,0,255,0.3)] ${waitlistFull
+                  ? 'cursor-not-allowed bg-gray-600/50 border border-gray-500 text-gray-400'
+                  : 'bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:from-pink-500 hover:to-purple-500 hover:shadow-[0_0_25px_rgba(250,38,160,0.8)] border border-pink-400'
+                  }`}
+              >
+                {waitlistFull ? 'Waitlist Full' : 'Enter Waitlist'}
+              </button>
+
             </div>
 
           </section>
@@ -202,7 +212,6 @@ function Queue() {
           {/* HOW TICKET QUEUING WORKS? (Tech Container) */}
           <section className="mt-14 sm:mt-20 mb-14 sm:mb-20 rounded-none p-[1px] bg-gradient-to-r from-[#00F0FF]/50 via-[#E000FF]/50 to-[#2596be]/50 shadow-[0_0_25px_rgba(0,240,255,0.2)] relative">
             <div className="w-full h-full bg-[#090520]/75 backdrop-blur-md p-6 sm:p-8">
-              {/* Corner Tech Accents */}
               <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#00F0FF]" />
               <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#00F0FF]" />
               <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#00F0FF]" />
@@ -216,7 +225,6 @@ function Queue() {
               </p>
 
               <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-
                 {/* Step 1 */}
                 <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#00F0FF] hover:to-[#2596be]">
                   <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
@@ -261,23 +269,33 @@ function Queue() {
                     </p>
                   </div>
                 </div>
-
               </div>
             </div>
           </section>
 
         </div>
 
+        {/* Global Footer */}
+
       </main>
 
-      {/* Queue Registration Modal */}
+      {/* Main Registration Modal */}
       <QueueingSystem
         isOpen={showQueueModal}
         onClose={() => setShowQueueModal(false)}
         onSuccess={() => {
-          fetchLiveCounts(); // Instantly update progress bar upon successful registration
+          fetchLiveCounts();
         }}
-        isWaitlistOnly={queueFull}
+        isWaitlistOnly={false}
+      />
+
+      {/* Dedicated Waitlist Modal */}
+      <WaitlistSystem
+        isOpen={showWaitlistModal}
+        onClose={() => setShowWaitlistModal(false)}
+        onSuccess={() => {
+          fetchLiveCounts();
+        }}
       />
     </>
   );
