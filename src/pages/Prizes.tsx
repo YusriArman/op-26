@@ -32,7 +32,7 @@ const merchandise = [
 
 const luckyDrawPrizes = [
   {
-    name: "Fuji Film Camera",
+    name: "Fujifilm Instax Mini 12 Instant Camera",
     image: "/FujiFilm.png",
     fit: "contain" as const,
   },
