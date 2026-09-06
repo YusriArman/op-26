@@ -1,4 +1,5 @@
 import PrizeCard from "../components/PrizeCard";
+const SPONSORS_REVEALED = true;
 
 const merchandise = [
   {
@@ -22,30 +23,33 @@ const merchandise = [
     image: "/Cyrus-Keychain.jpeg",
   },
   {
-    name: "Rolly Totebag",
-    price: "RM12",
+    name: "Elysium Totebag",
+    price: "RM15",
+    image: "/Totebag.jpeg",
+    fit: "contain" as const,
   },
 ];
 
 const luckyDrawPrizes = [
   {
-    name: "Lexa's Acrylic Keychain",
-    image: "/Lexa-Keychain.jpeg",
+    name: "Fuji Film Camera",
+    image: "/FujiFilm.png",
+    fit: "contain" as const,
   },
   {
-    name: "Kira's Acrylic Keychain",
-    image: "/Kira-Keychain.jpeg",
+    name: "JBL Wave Beam 2",
+    image: "/JBL Wave Beam 2.png",
+    fit: "contain" as const,
   },
   {
-    name: "Elysia's Acrylic Keychain",
-    image: "/Elysia-Keychain.jpeg",
+    name: "Montigo Water Bottle",
+    image: "/Montigo.png",
+    fit: "contain" as const,
   },
   {
-    name: "Cyrus' Acrylic Keychain",
-    image: "/Cyrus-Keychain.jpeg",
-  },
-  {
-    name: "Rolly Totebag",
+    name: "UGREEN Powerbank",
+    image: "/UGREEN Powerbank.png",
+    fit: "contain" as const,
   },
 ];
 
@@ -83,9 +87,9 @@ function Prizes() {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center px-6 md:px-0">
             <img
-              src="/Merch-Poster.png"
+              src="/Merch-Poster.jpeg"
               alt="Elysium Merchandise Catalogue"
               className="max-w-full h-auto drop-shadow-[0_0_25px_rgba(0,240,255,0.25)]"
             />
@@ -112,6 +116,7 @@ function Prizes() {
                 name={item.name}
                 price={item.price}
                 image={item.image}
+                fit={item.fit}
               />
 
             ))}
@@ -127,7 +132,7 @@ function Prizes() {
             Orientation Party Lucky Draw Prizes
           </h2>
           <p className="mt-2 text-center text-sm font-futura-book text-gray-300">
-            Spend. Collect. Win. Spend RM20+ at our vendors for a chance to win exclusive Elysium prizes.
+            Spend. Collect. Win. Spend RM20+ at our vendors or merch booth for a chance to win exclusive Elysium prizes.
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-4">
@@ -136,6 +141,7 @@ function Prizes() {
                 key={item.name}
                 name={item.name}
                 image={item.image}
+                fit={item.fit}
               />
             ))}
           </div>
@@ -193,62 +199,79 @@ function Prizes() {
             Our Sponsors
           </h2>
           <p className="mt-2 text-center text-sm font-futura-book text-gray-300">
-            Sign up with our sponsors for exclusive freebies and deals at the event.
+            {SPONSORS_REVEALED
+              ? "Sign up with our sponsors for exclusive freebies and deals at the event."
+              : "Something exciting is coming — check back soon for exclusive freebies and deals!"}
           </p>
 
-          <div className="mt-8 space-y-6">
+          {SPONSORS_REVEALED ? (
+            <div className="mt-8 space-y-6">
 
-            {/* Sponsor 1: App sign-up → free ice cream */}
-            <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-              <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
-                <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                  LOGO
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
-                    Sponsor App
-                  </h3>
-                  <p className="mt-2 text-sm font-futura-book text-gray-200 leading-relaxed">
-                    Sign up for Sponsor App to get a free scoop of Inside Scoop ice cream at their booth on the day!
-                  </p>
-                  <div className="mt-4 inline-block rounded-md bg-[#00F0FF]/10 border border-[#00F0FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]">
-                    Free Ice Cream Scoop
+              {/* Sponsor 1: App sign-up → free ice cream */}
+              <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
+                  <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+                    LOGO
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Sponsor 2: Custom TNG card */}
-            <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-              <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
-                <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                  CARD
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
-                    Custom Elysium TNG Card
-                  </h3>
-                  <p className="mt-2 text-sm font-futura-book text-gray-200 leading-relaxed">
-                    Get your own custom-designed Touch 'n Go card! Redeem at the sponsor booth on the day.
-                  </p>
-                  <div className="mt-4 flex gap-2">
-                    <div className="rounded-md bg-[#00F0FF]/10 border border-[#00F0FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]">
-                      First 300: Free
-                    </div>
-                    <div className="rounded-md bg-[#E000FF]/10 border border-[#E000FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#E000FF]">
-                      After: RM20
+                  <div>
+                    <h3 className="text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
+                      Sponsor App
+                    </h3>
+                    <p className="mt-2 text-sm font-futura-book text-gray-200 leading-relaxed">
+                      Sign up for Sponsor App to get a free scoop of Inside Scoop ice cream at their booth on the day!
+                    </p>
+                    <div className="mt-4 inline-block rounded-md bg-[#00F0FF]/10 border border-[#00F0FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]">
+                      Free Ice Cream Scoop
                     </div>
                   </div>
                 </div>
               </div>
+
+              {/* Sponsor 2: Custom TNG card */}
+              <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
+                  <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
+                    CARD
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
+                      Custom Elysium TNG Card
+                    </h3>
+                    <p className="mt-2 text-sm font-futura-book text-gray-200 leading-relaxed">
+                      Get your own custom-designed Touch 'n Go card! Redeem at the sponsor booth on the day.
+                    </p>
+                    <div className="mt-4 flex gap-2">
+                      <div className="rounded-md bg-[#00F0FF]/10 border border-[#00F0FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]">
+                        First 300: Free
+                      </div>
+                      <div className="rounded-md bg-[#E000FF]/10 border border-[#E000FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#E000FF]">
+                        After: RM20
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mt-8 p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+              <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-10 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-[#00F0FF]/50 bg-black/20 text-2xl text-[#00F0FF] shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                  ?
+                </div>
+                <h3 className="mt-4 text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
+                  To Be Revealed Soon
+                </h3>
+                <p className="mt-2 text-sm font-futura-book text-gray-300 leading-relaxed max-w-md mx-auto">
+                  We're finalizing some exciting sponsor partnerships with exclusive freebies and deals. Check back soon for the reveal!
+                </p>
+              </div>
+            </div>
+          )}
         </section>
-      </div >
-    </div >
-
+      </div>
+    </div>
   );
 }
 

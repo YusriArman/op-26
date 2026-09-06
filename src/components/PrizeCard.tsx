@@ -4,19 +4,21 @@ interface PrizeCardProps {
   name: string;
   price?: string;
   image?: string;
+  fit?: "cover" | "contain";
 }
 
 function PrizeCard({
   name,
   price,
   image,
+  fit = "cover",
 }: PrizeCardProps) {
   const [isZoomed, setIsZoomed] = useState(false);
 
   return (
     <>
       <div className="w-36 p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-        <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-3">
+        <div className="h-full flex flex-col rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-3">
           {/* Image */}
           <div
             className="aspect-[3/4] overflow-hidden rounded-lg bg-black/30 cursor-pointer"
@@ -26,13 +28,13 @@ function PrizeCard({
               <img
                 src={image}
                 alt={name}
-                className="h-full w-full object-cover transition-transform duration-300 hover:scale-110"
+                className={`h-full w-full transition-transform duration-300 hover:scale-110 ${fit === "contain" ? "object-contain" : "object-cover"}`}
               />
             )}
           </div>
 
           {/* Information */}
-          <div className="mt-2 text-center text-xs">
+          <div className="mt-2 flex-1 flex flex-col justify-center text-center text-xs">
             <p className="font-futura-heavy font-bold leading-tight text-cyan-300">
               {name}
             </p>
