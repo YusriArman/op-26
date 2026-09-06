@@ -166,7 +166,7 @@ function Prizes() {
               {[
                 { n: 1, title: "SPEND RM20", body: "Purchase RM20 worth of goods at our merch booth or our vendors." },
                 { n: 2, title: "DISPLAY YOUR TICKET", body: "Approach the Orientation Leaders' booth and give your ticket." },
-                { n: 3, title: "WAIT & WIN", body: "Prizes will be gifted to the winner at the end of OP so stay tuned!" },
+                { n: 3, title: "WAIT & WIN", body: "Prizes will be gifted to the winner at the end of Orientation Party so stay tuned!" },
                 { n: 4, title: "CLAIM PRIZE", body: "Winners receive their prizes at the end of Orientation Party 2026! Prizes are void if winners are not present, so be sure to stay for the whole thing!" },
               ].map((step) => (
                 <div
