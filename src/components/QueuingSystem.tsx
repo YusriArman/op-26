@@ -15,6 +15,7 @@ interface RegistrationResult {
     message: string;
     waitlistNumber?: number;
     slotDetails?: {
+        slotName?: string;
         venue: string;
         slotDate: string;
         startTime: string;
@@ -44,15 +45,13 @@ export default function QueueingSystem({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [result, setResult] = useState<RegistrationResult | null>(null);
 
+    // Fetch slots immediately on open & poll every 3 seconds while open
     useEffect(() => {
-        if (isWaitlistOnly) return;
+        if (!isOpen || isWaitlistOnly) return;
 
         let cancelled = false;
 
-        async function loadSlots() {
-            setLoadingSlots(true);
-
-            // ✅ Reading from dynamic view 'available_slots'
+        async function fetchFreshSlots() {
             const { data, error } = await supabase
                 .from('available_slots')
                 .select('*')
@@ -66,21 +65,34 @@ export default function QueueingSystem({
             } else if (data) {
                 const slotList = data as CollectionSlot[];
                 setSlots(slotList);
-                const firstAvailable = slotList.find((s: CollectionSlot) => s.booked_count < s.max_capacity);
-                if (firstAvailable) {
-                    setSelectedSlotId(firstAvailable.id);
-                }
+
+                // Auto-select first available slot if none selected yet
+                setSelectedSlotId((prev) => {
+                    if (prev && slotList.some((s) => s.id === prev && s.booked_count < s.max_capacity)) {
+                        return prev;
+                    }
+                    const firstAvailable = slotList.find((s) => s.booked_count < s.max_capacity);
+                    return firstAvailable ? firstAvailable.id : null;
+                });
             }
 
             setLoadingSlots(false);
         }
 
-        loadSlots();
+        // 1. Fetch immediately on open
+        setLoadingSlots(true);
+        void fetchFreshSlots();
+
+        // 2. Poll every 3 seconds while modal is open
+        const interval = setInterval(() => {
+            void fetchFreshSlots();
+        }, 3000);
 
         return () => {
             cancelled = true;
+            clearInterval(interval);
         };
-    }, [isWaitlistOnly]);
+    }, [isOpen, isWaitlistOnly]);
 
     // Lock background scrolling while modal is open & reset form
     useEffect(() => {
@@ -176,6 +188,7 @@ export default function QueueingSystem({
                 waitlistNumber: data.waitlist_number,
                 slotDetails: chosenSlot
                     ? {
+                        slotName: chosenSlot.slot_name,
                         venue: chosenSlot.venue,
                         slotDate: chosenSlot.slot_date,
                         startTime: chosenSlot.start_time,
@@ -249,9 +262,7 @@ export default function QueueingSystem({
                                             Ticket Collection Venue &amp; Time:
                                         </p>
                                         <p className="text-sm font-futura-heavy font-bold text-white mt-1">
-                                            {result.slotDetails.venue === 'TGH'
-                                                ? "Taylor's Grand Hall (TGH)"
-                                                : 'Lecture Theatre 1 (LT1)'}
+                                            {result.slotDetails.slotName || (result.slotDetails.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'Lecture Theatre 1 (LT1)')}
                                         </p>
                                         <p className="text-xs font-futura-book text-gray-300 mt-0.5">
                                             {formatDate(result.slotDetails.slotDate)}
@@ -384,8 +395,9 @@ export default function QueueingSystem({
                                                     >
                                                         <div className="w-full h-full bg-[#160b38]/90 p-3 flex items-center justify-between">
                                                             <div>
+                                                                {/* Dynamic Slot Name from DB */}
                                                                 <div className="text-xs font-futura-heavy font-bold text-white">
-                                                                    {slot.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'LT1'} •{' '}
+                                                                    {slot.slot_name || (slot.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'LT1')} •{' '}
                                                                     {formatDate(slot.slot_date)}
                                                                 </div>
                                                                 <div className="text-xs font-futura-book text-gray-300 mt-0.5">

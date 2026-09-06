@@ -36,12 +36,14 @@ export interface AttendedStudentRecord {
 
 export interface CollectionSlot {
   id: string;
+  slot_name?: string; // 👈 Added
   venue: Venue;
   slot_date: string;
   start_time: string;
   end_time: string;
   max_capacity: number;
   booked_count: number;
+  spots_left?: number;
   created_at?: string;
 }
 
