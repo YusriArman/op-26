@@ -1,5 +1,5 @@
 import PrizeCard from "../components/PrizeCard";
-const SPONSORS_REVEALED = true;
+const SPONSORS_REVEALED = false;
 
 const merchandise = [
   {
