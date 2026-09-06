@@ -15,6 +15,7 @@ interface RegistrationResult {
     message: string;
     waitlistNumber?: number;
     slotDetails?: {
+        slotName?: string;
         venue: string;
         slotDate: string;
         startTime: string;
@@ -52,7 +53,7 @@ export default function QueueingSystem({
         async function loadSlots() {
             setLoadingSlots(true);
 
-            // ✅ Reading from dynamic view 'available_slots'
+            // Reading from dynamic view 'available_slots' (with slot_name)
             const { data, error } = await supabase
                 .from('available_slots')
                 .select('*')
@@ -176,6 +177,7 @@ export default function QueueingSystem({
                 waitlistNumber: data.waitlist_number,
                 slotDetails: chosenSlot
                     ? {
+                        slotName: chosenSlot.slot_name,
                         venue: chosenSlot.venue,
                         slotDate: chosenSlot.slot_date,
                         startTime: chosenSlot.start_time,
@@ -249,9 +251,7 @@ export default function QueueingSystem({
                                             Ticket Collection Venue &amp; Time:
                                         </p>
                                         <p className="text-sm font-futura-heavy font-bold text-white mt-1">
-                                            {result.slotDetails.venue === 'TGH'
-                                                ? "Taylor's Grand Hall (TGH)"
-                                                : 'Lecture Theatre 1 (LT1)'}
+                                            {result.slotDetails.slotName || (result.slotDetails.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'Lecture Theatre 1 (LT1)')}
                                         </p>
                                         <p className="text-xs font-futura-book text-gray-300 mt-0.5">
                                             {formatDate(result.slotDetails.slotDate)}
@@ -384,8 +384,9 @@ export default function QueueingSystem({
                                                     >
                                                         <div className="w-full h-full bg-[#160b38]/90 p-3 flex items-center justify-between">
                                                             <div>
+                                                                {/* Dynamic Slot Name from DB */}
                                                                 <div className="text-xs font-futura-heavy font-bold text-white">
-                                                                    {slot.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'LT1'} •{' '}
+                                                                    {slot.slot_name || (slot.venue === 'TGH' ? "Taylor's Grand Hall (TGH)" : 'LT1')} •{' '}
                                                                     {formatDate(slot.slot_date)}
                                                                 </div>
                                                                 <div className="text-xs font-futura-book text-gray-300 mt-0.5">
