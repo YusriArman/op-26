@@ -45,15 +45,13 @@ export default function QueueingSystem({
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [result, setResult] = useState<RegistrationResult | null>(null);
 
+    // Fetch slots immediately on open & poll every 3 seconds while open
     useEffect(() => {
-        if (isWaitlistOnly) return;
+        if (!isOpen || isWaitlistOnly) return;
 
         let cancelled = false;
 
-        async function loadSlots() {
-            setLoadingSlots(true);
-
-            // Reading from dynamic view 'available_slots' (with slot_name)
+        async function fetchFreshSlots() {
             const { data, error } = await supabase
                 .from('available_slots')
                 .select('*')
@@ -67,21 +65,34 @@ export default function QueueingSystem({
             } else if (data) {
                 const slotList = data as CollectionSlot[];
                 setSlots(slotList);
-                const firstAvailable = slotList.find((s: CollectionSlot) => s.booked_count < s.max_capacity);
-                if (firstAvailable) {
-                    setSelectedSlotId(firstAvailable.id);
-                }
+
+                // Auto-select first available slot if none selected yet
+                setSelectedSlotId((prev) => {
+                    if (prev && slotList.some((s) => s.id === prev && s.booked_count < s.max_capacity)) {
+                        return prev;
+                    }
+                    const firstAvailable = slotList.find((s) => s.booked_count < s.max_capacity);
+                    return firstAvailable ? firstAvailable.id : null;
+                });
             }
 
             setLoadingSlots(false);
         }
 
-        loadSlots();
+        // 1. Fetch immediately on open
+        setLoadingSlots(true);
+        void fetchFreshSlots();
+
+        // 2. Poll every 3 seconds while modal is open
+        const interval = setInterval(() => {
+            void fetchFreshSlots();
+        }, 3000);
 
         return () => {
             cancelled = true;
+            clearInterval(interval);
         };
-    }, [isWaitlistOnly]);
+    }, [isOpen, isWaitlistOnly]);
 
     // Lock background scrolling while modal is open & reset form
     useEffect(() => {
