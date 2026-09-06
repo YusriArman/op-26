@@ -22,7 +22,7 @@ function Queue() {
   const [showWaitlistModal, setShowWaitlistModal] = useState<boolean>(false);
 
   const maxTickets = 1500;
-  const maxWaiting = 500;
+  const maxWaiting = 200;
 
   const queueFull = queueCount >= maxTickets;
   const waitlistFull = waitingCount >= maxWaiting;

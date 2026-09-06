@@ -23,7 +23,7 @@ const merchandise = [
   },
   {
     name: "Rolly Totebag",
-    price: "RM10",
+    price: "RM12",
   },
 ];
 
@@ -72,7 +72,7 @@ function Prizes() {
               Celebrate Orientation Party 2026 with exclusive Elysium merchandise featuring your favourite characters from the city!
             </p>
 
-            <div className="relative mt-6 inline-block border border-[#E000FF]/60 px-6 py-4">
+            <div className="relative mt-6 inline-block border border-[#E000FF]/60 bg-[#090520]/85 backdrop-blur-md px-6 py-4">
               <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#E000FF]" />
               <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#E000FF]" />
               <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#E000FF]" />
@@ -83,11 +83,11 @@ function Prizes() {
             </div>
           </div>
 
-          <div className="flex justify-start">
+          <div className="flex justify-center">
             <img
               src="/Merch-Poster.png"
               alt="Elysium Merchandise Catalogue"
-              className="max-w-full h-auto -ml-4 drop-shadow-[0_0_25px_rgba(0,240,255,0.25)]"
+              className="max-w-full h-auto drop-shadow-[0_0_25px_rgba(0,240,255,0.25)]"
             />
           </div>
 
