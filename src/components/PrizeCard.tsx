@@ -5,6 +5,7 @@ interface PrizeCardProps {
   price?: string;
   image?: string;
   fit?: "cover" | "contain";
+  objectPosition?: string;
 }
 
 function PrizeCard({
@@ -12,8 +13,10 @@ function PrizeCard({
   price,
   image,
   fit = "cover",
+  objectPosition = "center",
 }: PrizeCardProps) {
   const [isZoomed, setIsZoomed] = useState(false);
+
 
   return (
     <>
@@ -29,6 +32,7 @@ function PrizeCard({
                 src={image}
                 alt={name}
                 className={`h-full w-full transition-transform duration-300 hover:scale-110 ${fit === "contain" ? "object-contain" : "object-cover"}`}
+                style={{ objectPosition }}
               />
             )}
           </div>

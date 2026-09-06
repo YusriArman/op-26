@@ -1,7 +1,15 @@
 import PrizeCard from "../components/PrizeCard";
 const SPONSORS_REVEALED = false;
 
-const merchandise = [
+interface PrizeItem {
+  name: string;
+  price?: string;
+  image?: string;
+  fit?: "cover" | "contain";
+  objectPosition?: string;
+}
+
+const merchandise: PrizeItem[] = [
   {
     name: "Lexa's Acrylic Keychain",
     price: "RM8",
@@ -30,7 +38,7 @@ const merchandise = [
   },
 ];
 
-const luckyDrawPrizes = [
+const luckyDrawPrizes: PrizeItem[] = [
   {
     name: "Fujifilm Instax Mini 12 Instant Camera",
     image: "/FujiFilm.png",
@@ -117,6 +125,7 @@ function Prizes() {
                 price={item.price}
                 image={item.image}
                 fit={item.fit}
+                objectPosition={item.objectPosition}
               />
 
             ))}
@@ -142,6 +151,7 @@ function Prizes() {
                 name={item.name}
                 image={item.image}
                 fit={item.fit}
+                objectPosition={item.objectPosition}
               />
             ))}
           </div>
