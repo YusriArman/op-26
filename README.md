@@ -1,75 +1,61 @@
-# React + TypeScript + Vite
+# Elysium: Orientation Party 2026 Ticketing Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-concurrency, whitelist-verified ticketing and event operations platform built for Taylor's University Orientation Party 2026 (Elysium). The platform manages the entire lifecycle of student registration, physical ticket pickup timeslot reservations, on-ground wristband binding, and event-night gate admission.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 1. System Overview & Core Objectives
 
-## React Compiler
+Elysium 2026 is designed to handle high-traffic registration surges while strictly enforcing capacity limits, eliminating duplicate passes, and securing physical ticket distribution:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Capacity Target:** Strictly capped at 1,500 main passes and 200 sequential waitlist spots.
+* **Intake Verification:** Pre-loaded university freshmen directory whitelist to prevent non-freshmen or bot entries.
+* **Physical Ticket Binding:** Two-step verification where Orientation Leaders (OLs) physically bind a unique Ticket ID (TID) to a verified Student ID (SID).
+* **Gate Admission Control:** Real-time lookup and attendance stamping to prevent duplicate ticket pass-back fraud on event night.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 2. Technology Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **Frontend:** React 18, TypeScript, Vite, Tailwind CSS, Framer Motion
+* **Backend & Database:** Supabase (PostgreSQL 15+), PostgREST
+* **Security & Access Control:** PostgreSQL Row Level Security (RLS), `SECURITY DEFINER` Remote Procedure Calls (RPCs)
+* **Hosting & CDN:** Vercel (Single Page Application with client-side routing rewrites)
+* **Load & Stress Testing:** Grafana k6
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 3. Architecture & Operational Flow
 
-```
+### Phase 1: Online Registration (`Home.tsx` / `QueueingSystem.tsx`)
+1. The student enters their official Student ID (SID), Full Name (English alphabets only), Taylor's Student Email, and Personal Email.
+2. The database validates the SID against the `freshmen_directory` whitelist.
+3. If valid and under the 1,500 main limit, the student selects an available physical ticket collection timeslot (Taylor's Grand Hall on Sep 15 or Lecture Theatre 1 on Sep 17).
+4. An atomic row-level lock (`SELECT ... FOR UPDATE`) prevents slot overbooking.
+5. Once 1,500 main spots are filled, the system locks main registration and unlocks `register_waitlist`, assigning collision-free sequential waitlist ranks (#1 to #500).
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Phase 2: Physical Collection & Wristband Binding (`Binding.tsx`)
+1. The freshman arrives at the venue during their designated pickup window with their physical Student ID card.
+2. An Orientation Leader searches the student by SID.
+3. The OL takes a physical ticket/wristband, enters its unique Ticket ID (TID), and calls `bind_ticket_to_student`.
+4. The system validates that the TID is unique and not previously issued, updating the student's status to `collected` and `bound` with a timestamp and staff audit trail.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Phase 3: Event Night Gate Check-In (`Regi.tsx`)
+1. At the entrance to Taylor's Grand Hall, gate ushers search the attendee by either SID or TID.
+2. The system displays the student profile and bound TID.
+3. The usher verifies the physical card and marks attendance via `toggle_student_attendance`.
+4. If a ticket is scanned twice, the system immediately flags an "Already Attended" warning with the exact entry timestamp to prevent pass-back entry.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
 
-```
+4. Project Contributors
+
+  - Yusri Arman
+  - Tan Ming Reo
+  - Wong Ki Hurn
+
+5. License
+
+This project is developed for the Taylor's University Orientation Leader
+Committee (Orientation Party 2026). All rights reserved.
+
