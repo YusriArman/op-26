@@ -1,3 +1,5 @@
+<img width="1366" height="768" alt="Elysium Logo" src="https://github.com/user-attachments/assets/00dddc98-d899-4228-b4a6-e2c1ae31e0f0" />
+
 # Elysium: Orientation Party 2026 Ticketing Platform
 
 A high-concurrency, whitelist-verified ticketing and event operations platform built for Taylor's University Orientation Party 2026 (Elysium). The platform manages the entire lifecycle of student registration, physical ticket pickup timeslot reservations, on-ground wristband binding, and event-night gate admission.
