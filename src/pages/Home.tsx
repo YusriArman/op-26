@@ -11,9 +11,6 @@ import type { Announcement } from '../types/announcement';
 // Make sure the hero video only plays once per session
 let heroHasPlayed = false;
 
-
-
-
 function Queue() {
   // Video ref for programmatic mobile autoplay
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -26,7 +23,9 @@ function Queue() {
   const [showQueueModal, setShowQueueModal] = useState<boolean>(false);
   const [showWaitlistModal, setShowWaitlistModal] = useState<boolean>(false);
 
+  // Announcements State & Detail Modal
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
 
   useEffect(() => {
     fetchAnnouncements()
@@ -39,7 +38,12 @@ function Queue() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'announcements' },
         (payload) => {
-          setAnnouncements((prev) => [payload.new as Announcement, ...prev]);
+          const newPost = payload.new as Announcement;
+          // Only show immediately if it is active and publish time has arrived!
+          const isPublished = !newPost.publish_at || new Date(newPost.publish_at) <= new Date();
+          if (newPost.is_active !== false && isPublished) {
+            setAnnouncements((prev) => [newPost, ...prev]);
+          }
         }
       )
       .subscribe();
@@ -49,10 +53,24 @@ function Queue() {
     };
   }, []);
 
+  // Lock body scroll when announcement modal is open
+  useEffect(() => {
+    if (selectedAnnouncement) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedAnnouncement]);
+
   function timeAgo(dateString: string) {
     const diffMs = Date.now() - new Date(dateString).getTime();
+    const mins = Math.floor(diffMs / (1000 * 60));
+    if (mins < 1) return 'Just now';
+    if (mins < 60) return `${mins}m ago`;
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    if (hours < 1) return "Just now";
     if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
     return `${days}d ago`;
@@ -93,7 +111,6 @@ function Queue() {
       videoRef.current.defaultMuted = true;
       videoRef.current.muted = true;
       videoRef.current.play().catch(() => {
-        // Fallback if browser battery saver strictly blocks autoplay
         console.log('Mobile autoplay handled by user interaction.');
       });
     }
@@ -174,6 +191,7 @@ function Queue() {
           ref={videoRef}
           className="h-full w-full object-cover"
           src="/Elysium-Logo.mp4"
+          poster="/Elysium-Logo.png"
           autoPlay
           muted
           playsInline
@@ -257,14 +275,14 @@ function Queue() {
                     <img
                       src="/rolby-loading.png"
                       alt="Main Queue Mascot"
-                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(60,246,247,1)]"
+                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(225,57,250,1)]"
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Side-by-Side Action Buttons with Darkened Inactive State */}
+            {/* Side-by-Side Action Buttons */}
             <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
 
               {/* Button 1: Main Queue */}
@@ -295,47 +313,113 @@ function Queue() {
 
           </section>
 
-          {/* Live Announcements */}
+          {/* Live Announcements Section (Optimized Padding) */}
           <section className="mt-14 sm:mt-16 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
-            <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-6 sm:p-8">
+            <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-4 sm:p-6">
               <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#3cf6f7]" />
               <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#3cf6f7]" />
               <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#3cf6f7]" />
               <div className="absolute bottom-0 right-0 h-3 w-3 border-b-2 border-r-2 border-[#3cf6f7]" />
 
-              <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.25em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
-                Announcements
-              </h3>
-              <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                Live updates from the Elysium team.
-              </p>
+              {/* Announcements Header (Mobile Responsive & Non-Wrapping Badge) */}
+              <div className="flex items-start sm:items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.2em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
+                    Announcements
+                  </h3>
+                  <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                    Live updates from the Elysium team. Click on any update to expand.
+                  </p>
+                </div>
 
-              <div className="mt-6 space-y-3 max-h-80 overflow-y-auto pr-1">
-                {announcements.map((a, index) => (
-                  <div
-                    key={a.id}
-                    className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]"
-                  >
-                    <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4">
-                      <div className="flex items-center justify-between gap-2">
-                        <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.1em]">
-                          {a.title}
-                        </h4>
-                        {index === 0 && (
-                          <span className="shrink-0 rounded-full bg-[#e139fa] px-2 py-0.5 text-[10px] font-futura-heavy font-bold text-white shadow-[0_0_8px_rgba(225,57,250,0.7)]">
-                            NEW
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                        {a.content}
-                      </p>
-                      <p className="mt-2 text-[10px] font-futura-book uppercase tracking-wider text-gray-400">
-                        {timeAgo(a.created_at)}
-                      </p>
-                    </div>
+                {/* 3 LIVE Badge — Locked to single line with breathing room */}
+                {announcements.length > 0 && (
+                  <span className="whitespace-nowrap shrink-0 text-[10px] sm:text-[11px] font-futura-medium text-[#3cf6f7] border border-[#3cf6f7]/40 bg-cyan-950/60 px-2.5 py-1 uppercase tracking-wider rounded-none shadow-[0_0_10px_rgba(60,246,247,0.25)]">
+                    {announcements.length} Live
+                  </span>
+                )}
+              </div>
+
+              {/* Announcements List Container (Padded so hover glow never clips) */}
+              <div className="mt-4 space-y-4 max-h-80 overflow-y-auto overflow-x-hidden p-3 sm:p-3.5 pr-3 sm:pr-4 -mx-1">
+                {announcements.length === 0 ? (
+                  <div className="py-8 text-center text-xs font-futura-book text-gray-400">
+                    No active announcements at the moment.
                   </div>
-                ))}
+                ) : (
+                  announcements.map((a, index) => (
+                    <div
+                      key={a.id}
+                      onClick={() => setSelectedAnnouncement(a)}
+                      className="group p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] cursor-pointer transition-all duration-200 hover:shadow-[0_0_6px_rgba(60,246,247,0.25)]"
+                    >
+                      <div className="rounded-[11px] bg-[#160b38]/90 group-hover:bg-[#1f0f4e] backdrop-blur-sm p-4 transition-colors">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* PINNED BADGE */}
+                            {a.is_pinned && (
+                              <span className="inline-flex items-center gap-1 shrink-0 rounded-full border border-[#3cf6f7] bg-[#3cf6f7]/20 px-2 py-0.5 text-[10px] font-futura-heavy font-bold text-[#3cf6f7] shadow-[0_0_8px_rgba(60,246,247,0.6)] uppercase tracking-wider">
+                                <svg
+                                  className="w-3 h-3 fill-current"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z" />
+                                </svg>
+                                Pinned
+                              </span>
+                            )}
+
+                            {/* NEW BADGE */}
+                            {index === 0 && !a.is_pinned && (
+                              <span className="shrink-0 rounded-full bg-[#e139fa] px-2 py-0.5 text-[10px] font-futura-heavy font-bold text-white shadow-[0_0_8px_rgba(225,57,250,0.7)] uppercase tracking-wider">
+                                NEW
+                              </span>
+                            )}
+
+                            {/* CATEGORY BADGE */}
+                            {a.category && a.category !== 'info' && (
+                              <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-futura-heavy font-bold uppercase tracking-wider ${a.category === 'urgent'
+                                ? 'bg-red-500/20 text-red-300 border border-red-500/40'
+                                : a.category === 'event'
+                                  ? 'bg-cyan-500/20 text-[#3cf6f7] border border-cyan-500/40'
+                                  : a.category === 'warning'
+                                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                                    : 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                                }`}>
+                                {a.category}
+                              </span>
+                            )}
+
+                            <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] group-hover:text-white uppercase tracking-[0.1em] transition-colors">
+                              {a.title}
+                            </h4>
+                          </div>
+
+                          <span className="text-[10px] font-futura-book uppercase tracking-wider text-gray-400 shrink-0 mt-0.5">
+                            {timeAgo(a.created_at)}
+                          </span>
+                        </div>
+
+                        {/* Snippet Content */}
+                        <p className="mt-2 text-xs font-futura-book text-gray-200 leading-relaxed line-clamp-2 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                          {a.content}
+                        </p>
+
+                        <div className="mt-3 flex items-center justify-between pt-2 border-t border-white/5">
+                          <span className="text-[10px] font-futura-medium text-cyan-300/80 group-hover:text-cyan-300 flex items-center gap-1 transition-colors">
+                            Click to expand
+                            <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </span>
+                          <span className="text-[10px] font-futura-book text-gray-400">
+                            {new Date(a.publish_at || a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </section>
@@ -407,6 +491,83 @@ function Queue() {
         </div>
 
       </main>
+
+      {/* ENLARGEABLE ANNOUNCEMENT MODAL */}
+      {selectedAnnouncement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 overflow-y-auto">
+          <div className="w-full max-w-lg rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/80 via-[#e139fa]/80 to-[#6045f4]/80 shadow-[0_0_40px_rgba(60,246,247,0.3)] relative text-white my-8">
+            <div className="w-full h-full bg-[#090520]/95 backdrop-blur-xl p-6 sm:p-8">
+              {/* Tech Corner Decorative Accents */}
+              <div className="absolute top-0 left-0 h-3.5 w-3.5 border-t-2 border-l-2 border-[#3cf6f7]" />
+              <div className="absolute top-0 right-0 h-3.5 w-3.5 border-t-2 border-r-2 border-[#3cf6f7]" />
+              <div className="absolute bottom-0 left-0 h-3.5 w-3.5 border-b-2 border-l-2 border-[#3cf6f7]" />
+              <div className="absolute bottom-0 right-0 h-3.5 w-3.5 border-b-2 border-r-2 border-[#3cf6f7]" />
+
+              {/* Modal Header */}
+              <div className="flex items-start justify-between border-b border-cyan-400/20 pb-4">
+                <div className="space-y-2 pr-4">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {selectedAnnouncement.is_pinned && (
+                      <span className="inline-flex items-center gap-1 shrink-0 rounded-full border border-[#3cf6f7] bg-[#3cf6f7]/20 px-2 py-0.5 text-[10px] font-futura-heavy font-bold text-[#3cf6f7] shadow-[0_0_8px_rgba(60,246,247,0.6)] uppercase tracking-wider">
+                        <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                          <path d="M16 12V4h1V2H7v2h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z" />
+                        </svg>
+                        Pinned
+                      </span>
+                    )}
+                    {selectedAnnouncement.category && (
+                      <span className="shrink-0 rounded-full bg-cyan-500/20 text-[#3cf6f7] border border-cyan-500/40 px-2 py-0.5 text-[10px] font-futura-heavy font-bold uppercase tracking-wider">
+                        {selectedAnnouncement.category}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-futura-heavy font-bold uppercase tracking-[0.15em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.6)]">
+                    {selectedAnnouncement.title}
+                  </h3>
+                </div>
+
+                <button
+                  onClick={() => setSelectedAnnouncement(null)}
+                  className="rounded-none p-1.5 text-gray-400 hover:text-[#3cf6f7] hover:bg-cyan-950/40 transition shrink-0"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="py-6">
+                <div className="rounded-xl border border-purple-500/30 bg-[#160b38]/70 p-5 shadow-[0_0_15px_rgba(0,0,0,0.3)]">
+                  <p className="text-xs sm:text-sm font-futura-book text-gray-100 whitespace-pre-line leading-relaxed">
+                    {selectedAnnouncement.content}
+                  </p>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between text-[11px] font-futura-book text-gray-400 px-1">
+                  <span>
+                    Published: {new Date(selectedAnnouncement.publish_at || selectedAnnouncement.created_at).toLocaleDateString('en-GB', {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                  <span>{timeAgo(selectedAnnouncement.created_at)}</span>
+                </div>
+              </div>
+
+              {/* Modal Footer Button */}
+              <button
+                onClick={() => setSelectedAnnouncement(null)}
+                className="w-full rounded-none bg-gradient-to-r from-cyan-600 via-blue-600 to-purple-600 hover:from-cyan-500 hover:to-purple-500 py-3 text-xs font-futura-heavy font-bold uppercase tracking-[0.15em] text-white shadow-[0_0_20px_rgba(60,246,247,0.4)] transition"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Registration Modal */}
       <QueueingSystem
