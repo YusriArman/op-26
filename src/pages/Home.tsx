@@ -5,9 +5,14 @@ import WaitlistSystem from '../components/WaitlistSystem';
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../utils/supabase';
+import { fetchAnnouncements } from '../services/announcementService';
+import type { Announcement } from '../types/announcement';
 
 // Make sure the hero video only plays once per session
 let heroHasPlayed = false;
+
+
+
 
 function Queue() {
   // Video ref for programmatic mobile autoplay
@@ -20,6 +25,38 @@ function Queue() {
   // Modals State
   const [showQueueModal, setShowQueueModal] = useState<boolean>(false);
   const [showWaitlistModal, setShowWaitlistModal] = useState<boolean>(false);
+
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    fetchAnnouncements()
+      .then(setAnnouncements)
+      .catch((err) => console.error('Failed to fetch announcements:', err));
+
+    const channel = supabase
+      .channel('announcements-feed')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'announcements' },
+        (payload) => {
+          setAnnouncements((prev) => [payload.new as Announcement, ...prev]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  function timeAgo(dateString: string) {
+    const diffMs = Date.now() - new Date(dateString).getTime();
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    if (hours < 1) return "Just now";
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  }
 
   const maxTickets = 1500;
   const maxWaiting = 200;
@@ -256,6 +293,51 @@ function Queue() {
 
             </div>
 
+          </section>
+
+          {/* Live Announcements */}
+          <section className="mt-14 sm:mt-16 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
+            <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-6 sm:p-8">
+              <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#3cf6f7]" />
+              <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#3cf6f7]" />
+              <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#3cf6f7]" />
+              <div className="absolute bottom-0 right-0 h-3 w-3 border-b-2 border-r-2 border-[#3cf6f7]" />
+
+              <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.25em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
+                Announcements
+              </h3>
+              <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                Live updates from the Elysium team.
+              </p>
+
+              <div className="mt-6 space-y-3 max-h-80 overflow-y-auto pr-1">
+                {announcements.map((a, index) => (
+                  <div
+                    key={a.id}
+                    className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]"
+                  >
+                    <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4">
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.1em]">
+                          {a.title}
+                        </h4>
+                        {index === 0 && (
+                          <span className="shrink-0 rounded-full bg-[#e139fa] px-2 py-0.5 text-[10px] font-futura-heavy font-bold text-white shadow-[0_0_8px_rgba(225,57,250,0.7)]">
+                            NEW
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                        {a.content}
+                      </p>
+                      <p className="mt-2 text-[10px] font-futura-book uppercase tracking-wider text-gray-400">
+                        {timeAgo(a.created_at)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </section>
 
           {/* HOW TICKET QUEUING WORKS? (Tech Container) */}
