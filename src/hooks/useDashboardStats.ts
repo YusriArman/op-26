@@ -35,14 +35,6 @@ interface DashboardStats {
   waitlist: WaitlistStats;
 }
 
-interface StudentRow {
-  reg_type: "main" | "waitlist";
-  ticket_status: "pending_collection" | "collected" | "cancelled";
-  binding_status: "bound" | "unbound";
-  is_attended: boolean;
-  slot_id: string | null;
-}
-
 interface OverallMetricsRow {
   target_capacity: number;
   waitlist_capacity: number;
@@ -51,6 +43,12 @@ interface OverallMetricsRow {
   total_tickets_collected_and_bound: number;
   total_students_attended: number;
   open_dday_slots: number;
+}
+
+interface CountFilters {
+  eq?: Array<[string, string | boolean]>;
+  neq?: Array<[string, string]>;
+  in?: [string, string[]];
 }
 
 const FALLBACK_TARGET_CAPACITY = 1500;
@@ -78,6 +76,30 @@ const emptyStats: DashboardStats = {
   },
 };
 
+// Count-only query — never subject to PostgREST's default 1000-row cap,
+// since it returns a single number rather than actual rows. This is why
+// we use this instead of fetching every student row and filtering/counting
+// in the browser, which was silently truncating and undercounting once the
+// students table passed 1000 rows.
+async function fetchStudentCount(filters: CountFilters): Promise<number> {
+  let query = supabase.from("students").select("*", { count: "exact", head: true });
+
+  for (const [column, value] of filters.eq ?? []) {
+    query = query.eq(column, value);
+  }
+  for (const [column, value] of filters.neq ?? []) {
+    query = query.neq(column, value);
+  }
+  if (filters.in) {
+    const [column, values] = filters.in;
+    query = query.in(column, values);
+  }
+
+  const { count, error } = await query;
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+}
+
 export function useDashboardStats() {
   const [stats, setStats] = useState<DashboardStats>(emptyStats);
   const [loading, setLoading] = useState(true);
@@ -91,85 +113,110 @@ export function useDashboardStats() {
       setLoading(true);
       setError(null);
 
-      const [metricsRes, studentsRes, slotsRes] = await Promise.all([
-        supabase.from("admin_overall_metrics").select("*").single(),
-        supabase.from("students").select("reg_type, ticket_status, binding_status, is_attended, slot_id"),
-        supabase.from("collection_slots").select("id, venue, max_capacity"),
-      ]);
+      try {
+        const [metricsRes, slotsRes] = await Promise.all([
+          supabase.from("admin_overall_metrics").select("*").single(),
+          // collection_slots is small (a handful of rows) — safe to fetch
+          // in full, unlike students.
+          supabase.from("collection_slots").select("id, venue, max_capacity"),
+        ]);
 
-      if (cancelled) return;
+        if (metricsRes.error) throw new Error(metricsRes.error.message);
+        if (slotsRes.error) throw new Error(slotsRes.error.message);
 
-      if (metricsRes.error || studentsRes.error || slotsRes.error) {
-        setError(
-          metricsRes.error?.message ??
-          studentsRes.error?.message ??
-          slotsRes.error?.message ??
-          "Failed to load stats."
-        );
-        setLoading(false);
-        return;
-      }
+        const metrics = metricsRes.data as OverallMetricsRow;
+        const slots = slotsRes.data ?? [];
+        const waitlistCapacity = metrics.waitlist_capacity ?? FALLBACK_WAITLIST_CAPACITY;
 
-      const metrics = metricsRes.data as OverallMetricsRow;
-      const students = (studentsRes.data ?? []) as StudentRow[];
-      const slots = slotsRes.data ?? [];
+        const buildDay = async (venue: "TGH" | "LT1"): Promise<DayStats> => {
+          const venueSlots = slots.filter((s) => s.venue === venue);
+          const venueSlotIds = venueSlots.map((s) => s.id);
+          const capacity = venueSlots.reduce((sum, s) => sum + s.max_capacity, 0);
 
-      const aggregate = (venue: "TGH" | "LT1"): DayStats => {
-        const venueSlots = slots.filter((s) => s.venue === venue);
-        const venueSlotIds = new Set(venueSlots.map((s) => s.id));
-        const capacity = venueSlots.reduce((sum, s) => sum + s.max_capacity, 0);
+          if (venueSlotIds.length === 0) {
+            return { registered: 0, binded: 0, attended: 0, emptySlots: capacity, capacity };
+          }
 
-        // Main queue students assigned to this venue
-        const venueStudents = students.filter(
-          (s) => s.reg_type === "main" && s.slot_id && venueSlotIds.has(s.slot_id)
-        );
+          const [registered, binded, attended] = await Promise.all([
+            fetchStudentCount({
+              eq: [["reg_type", "main"]],
+              neq: [["ticket_status", "cancelled"]],
+              in: ["slot_id", venueSlotIds],
+            }),
+            fetchStudentCount({
+              eq: [["reg_type", "main"], ["binding_status", "bound"]],
+              in: ["slot_id", venueSlotIds],
+            }),
+            fetchStudentCount({
+              eq: [["reg_type", "main"], ["is_attended", true]],
+              in: ["slot_id", venueSlotIds],
+            }),
+          ]);
 
-        return {
-          registered: venueStudents.length,
-          binded: venueStudents.filter((s) => s.binding_status === "bound").length,
-          attended: venueStudents.filter((s) => s.is_attended).length,
-          emptySlots: Math.max(capacity - venueStudents.length, 0),
-          capacity,
+          return {
+            registered,
+            binded,
+            attended,
+            emptySlots: Math.max(capacity - registered, 0),
+            capacity,
+          };
         };
-      };
 
-      // Active waitlisted students (waiting without a ticket)
-      const waitlistPending = students.filter(
-        (s) => s.reg_type === "waitlist" && s.binding_status === "unbound"
-      );
+        const [
+          day1,
+          day2,
+          waitlistPending,
+          waitlistPendingAttended,
+          waitlistPromoted,
+          waitlistPromotedAttended,
+        ] = await Promise.all([
+          buildDay("TGH"),
+          buildDay("LT1"),
+          fetchStudentCount({
+            eq: [["reg_type", "waitlist"], ["binding_status", "unbound"]],
+            neq: [["ticket_status", "cancelled"]],
+          }),
+          fetchStudentCount({
+            eq: [["reg_type", "waitlist"], ["binding_status", "unbound"], ["is_attended", true]],
+            neq: [["ticket_status", "cancelled"]],
+          }),
+          fetchStudentCount({
+            eq: [["reg_type", "waitlist"], ["binding_status", "bound"]],
+          }),
+          fetchStudentCount({
+            eq: [["reg_type", "waitlist"], ["binding_status", "bound"], ["is_attended", true]],
+          }),
+        ]);
 
-      // Promoted waitlisted students (claimed a leftover physical ticket)
-      const waitlistPromoted = students.filter(
-        (s) => s.reg_type === "waitlist" && s.binding_status === "bound"
-      );
+        if (cancelled) return;
 
-      const waitlistCapacity = metrics.waitlist_capacity ?? FALLBACK_WAITLIST_CAPACITY;
-
-      setStats({
-        overall: {
-          total_main_registered: metrics.total_main_registered,
-          total_waitlisted: metrics.total_waitlisted,
-          total_tickets_collected_and_bound: metrics.total_tickets_collected_and_bound,
-          total_students_attended: metrics.total_students_attended,
-          target_capacity: metrics.target_capacity ?? FALLBACK_TARGET_CAPACITY,
-          open_dday_slots: metrics.open_dday_slots,
-        },
-        day1: aggregate("TGH"),
-        day2: aggregate("LT1"),
-        waitlist: {
-          registered: waitlistPending.length,
-          attended: waitlistPending.filter((s) => s.is_attended).length,
-          capacity: waitlistCapacity,
-          available: Math.max(
-            waitlistCapacity - (waitlistPending.length + waitlistPromoted.length),
-            0
-          ),
-          promoted: waitlistPromoted.length,
-          promotedAttended: waitlistPromoted.filter((s) => s.is_attended).length,
-        },
-      });
-
-      setLoading(false);
+        setStats({
+          overall: {
+            total_main_registered: metrics.total_main_registered,
+            total_waitlisted: metrics.total_waitlisted,
+            total_tickets_collected_and_bound: metrics.total_tickets_collected_and_bound,
+            total_students_attended: metrics.total_students_attended,
+            target_capacity: metrics.target_capacity ?? FALLBACK_TARGET_CAPACITY,
+            open_dday_slots: metrics.open_dday_slots,
+          },
+          day1,
+          day2,
+          waitlist: {
+            registered: waitlistPending,
+            attended: waitlistPendingAttended,
+            capacity: waitlistCapacity,
+            available: Math.max(waitlistCapacity - (waitlistPending + waitlistPromoted), 0),
+            promoted: waitlistPromoted,
+            promotedAttended: waitlistPromotedAttended,
+          },
+        });
+        setLoading(false);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load stats.");
+          setLoading(false);
+        }
+      }
     }
 
     load();
