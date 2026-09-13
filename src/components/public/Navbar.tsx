@@ -45,6 +45,7 @@ function Navbar() {
           <Link to="/" className={linkClass("/")}>HOME</Link>
           <Link to="/faq" className={linkClass("/faq")}>FAQ</Link>
           <Link to="/prizes" className={linkClass("/prizes")}>MERCH &amp; LUCKY DRAW</Link>
+          <Link to="/search-slot" className={linkClass("/search-slot")}>Collection Slot</Link>
         </div>
 
         {/* Mobile hamburger — hidden at md and above */}

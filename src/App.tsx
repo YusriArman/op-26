@@ -21,6 +21,7 @@ import Day2Binding from "./pages/admin/Day2Binding";
 import WaitlistBinding from "./pages/admin/WaitlistBinding";
 import AttendedStudents from "./pages/admin/AttendedStudents";
 import Database from "./pages/admin/Database";
+import SearchSlot from "./pages/SearchSlot";
 
 function App() {
   return (
@@ -47,6 +48,8 @@ function App() {
             path="/prizes"
             element={<Prizes />}
           />
+
+          <Route path="/search-slot" element={<SearchSlot />} />
 
         </Route>
 
