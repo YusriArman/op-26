@@ -9,10 +9,9 @@ function Navbar() {
   const isActive = (path: string) => location.pathname === path;
 
   const linkClass = (path: string) =>
-    `transition duration-200 ${
-      isActive(path)
-        ? "text-[#00F0FF] drop-shadow-[0_0_10px_rgba(0,240,255,0.9)]"
-        : "text-gray-300 hover:text-[#00F0FF] hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]"
+    `transition duration-200 ${isActive(path)
+      ? "text-[#00F0FF] drop-shadow-[0_0_10px_rgba(0,240,255,0.9)]"
+      : "text-gray-300 hover:text-[#00F0FF] hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]"
     }`;
 
   return (
@@ -81,6 +80,9 @@ function Navbar() {
             </Link>
             <Link to="/prizes" onClick={() => setMobileOpen(false)} className={linkClass("/prizes")}>
               MERCH &amp; LUCKY DRAW
+            </Link>
+            <Link to="/search-slot" onClick={() => setMobileOpen(false)} className={linkClass("/search-slot")}>
+              Collection Slot
             </Link>
           </div>
         </div>
