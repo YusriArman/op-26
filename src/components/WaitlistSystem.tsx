@@ -190,7 +190,7 @@ export default function WaitlistSystem({
                         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
                             {/* Info Notice */}
                             <div className="rounded-none bg-purple-950/40 border border-purple-500/30 p-3 text-xs font-futura-book text-gray-300 leading-relaxed">
-                                <span className="font-bold text-[#FA26A0]">Note:</span> You do not need to choose a timeslot. Waitlist admissions are subject to uncollected ticket availability at collection venues.
+                                <span className="font-bold text-[#FA26A0]">Note:</span> You do not need to choose a timeslot as waitlist admissions are subject to uncollected ticket availability. Ticket collection will be in front of LT1 from 3.00pm - 6.30pm on the Event Day (18th September 2026).
                             </div>
 
                             {errorMessage && (
