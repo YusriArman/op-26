@@ -77,7 +77,7 @@ function Queue() {
   }
 
   const maxTickets = 1500;
-  const maxWaiting = 200;
+  const maxWaiting = 500;
 
   const queueFull = queueCount >= maxTickets;
   const waitlistFull = waitingCount >= maxWaiting;
@@ -191,7 +191,6 @@ function Queue() {
           ref={videoRef}
           className="h-full w-full object-cover"
           src="/Elysium-Logo.mp4"
-          poster="/Elysium-Logo.png"
           autoPlay
           muted
           playsInline

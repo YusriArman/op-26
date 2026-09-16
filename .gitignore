@@ -25,3 +25,10 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+new_students_only.csv
+new.csv
+old.csv
+find-new-students.js
+test1-script.js
+test2-script.js
+test3-script.js
