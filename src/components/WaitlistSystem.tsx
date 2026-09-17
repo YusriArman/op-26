@@ -162,7 +162,7 @@ export default function WaitlistSystem({
                                         • Uncollected passes will be released on a <strong>first-come, first-served</strong> basis.
                                     </p>
                                     <p className="text-xs font-futura-book text-gray-200 leading-relaxed">
-                                        • <strong>Collection Drop Date:</strong> Thursday, 17th September 2026 at Lecture Theatre 1 (LT1) &amp; D-Day Booth.
+                                        • <strong>Collection Drop Date:</strong> Friday, 18th September 2026 at Lecture Theatre 1 (LT1) &amp; Vendor Booth from 3.00pm - 6.30pm.
                                     </p>
                                     <p className="text-xs font-futura-book text-gray-300">
                                         • Bring your official Student ID card to claim any leftover passes.
@@ -190,7 +190,7 @@ export default function WaitlistSystem({
                         <form onSubmit={handleSubmit} className="mt-4 space-y-3.5">
                             {/* Info Notice */}
                             <div className="rounded-none bg-purple-950/40 border border-purple-500/30 p-3 text-xs font-futura-book text-gray-300 leading-relaxed">
-                                <span className="font-bold text-[#FA26A0]">Note:</span> You do not need to choose a timeslot. Waitlist admissions are subject to uncollected ticket availability at collection venues.
+                                <span className="font-bold text-[#FA26A0]">Note:</span> You do not need to choose a timeslot as waitlist admissions are subject to uncollected ticket availability. Ticket collection will be in front of LT1 from 3.00pm - 6.30pm on the Event Day (18th September 2026).
                             </div>
 
                             {errorMessage && (
