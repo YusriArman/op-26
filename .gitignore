@@ -25,3 +25,11 @@ dist-ssr
 .env
 .env.local
 .env.*.local
+
+# Data & intake CSV files
+*.csv
+
+# Local utility & load test scripts
+find-new-students.js
+test*-script.js
+test*.js
