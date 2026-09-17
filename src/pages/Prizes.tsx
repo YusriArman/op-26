@@ -1,5 +1,8 @@
+import { useState } from "react";
 import PrizeCard from "../components/PrizeCard";
-const SPONSORS_REVEALED = false;
+
+
+const SPONSORS_REVEALED = true;
 
 interface PrizeItem {
   name: string;
@@ -62,6 +65,8 @@ const luckyDrawPrizes: PrizeItem[] = [
 ];
 
 function Prizes() {
+  const [showcaseSpinning, setShowcaseSpinning] = useState(true);
+  const [cardFlipped, setCardFlipped] = useState(false);
   return (
     <div className="w-full min-h-screen bg-[linear-gradient(to_bottom,rgba(0,8,27,0.58),rgba(0,8,27,0.50),rgba(0,8,27,0.65)),url('/bg.png')] bg-cover bg-center bg-fixed text-white">
       <div className="mx-auto max-w-5xl px-6 py-8">
@@ -218,18 +223,18 @@ function Prizes() {
             <div className="mt-8 space-y-6">
 
               {/* Sponsor 1: App sign-up → free ice cream */}
-              <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
-                  <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                    LOGO
+              <div className="overflow-hidden rounded-xl p-[1px] bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-center">
+                  <div className="mx-auto md:mx-0 w-full max-w-[300px] aspect-[16/9] overflow-hidden rounded-xl bg-black/20">
+                    <img src="/Honey Lemon App.png" alt="Honey Lemon App" className="h-full w-full object-cover" />
                   </div>
 
                   <div>
                     <h3 className="text-lg font-futura-heavy font-bold text-[#00F0FF] uppercase tracking-[0.15em]">
-                      Sponsor App
+                      Honey Lemon
                     </h3>
                     <p className="mt-2 text-sm font-futura-book text-gray-200 leading-relaxed">
-                      Sign up for Sponsor App to get a free scoop of Inside Scoop ice cream at their booth on the day!
+                      Sign up for Honey Lemon to get a free scoop of Inside Scoop ice cream at their booth on the day!
                     </p>
                     <div className="mt-4 inline-block rounded-md bg-[#00F0FF]/10 border border-[#00F0FF]/40 px-4 py-2 text-center text-xs font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]">
                       Free Ice Cream Scoop
@@ -239,10 +244,28 @@ function Prizes() {
               </div>
 
               {/* Sponsor 2: Custom TNG card */}
-              <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
-                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
-                  <div className="mx-auto md:mx-0 flex h-40 w-40 items-center justify-center rounded-xl border border-[#00F0FF]/50 bg-black/20 text-sm font-futura-book text-gray-400 shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                    CARD
+              <div className="overflow-hidden rounded-xl p-[1px] bg-gradient-to-br from-[#00F0FF]/60 via-[#E000FF]/60 to-[#2596be]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)]">
+                <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-6 grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 items-center">
+                  <div
+                    onClick={() => setCardFlipped((f) => !f)}
+                    className="mx-auto md:mx-0 w-full max-w-[300px] aspect-[1000/630] cursor-pointer overflow-hidden rounded-xl [perspective:1000px]"
+                  >
+                    <div
+                      className="relative h-full w-full transition-transform duration-500 [transform-style:preserve-3d]"
+                      style={{ transform: cardFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+                    >
+                      <img
+                        src="/Front Template.jpg"
+                        alt="Elysium TNG Card — Front"
+                        className="absolute inset-0 h-full w-full object-cover [backface-visibility:hidden]"
+                      />
+                      <img
+                        src="/Back Template.jpg"
+                        alt="Elysium TNG Card — Back"
+                        className="absolute inset-0 h-full w-full object-cover [backface-visibility:hidden]"
+                        style={{ transform: "rotateY(180deg)" }}
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -279,6 +302,52 @@ function Prizes() {
               </div>
             </div>
           )}
+        </section>
+        {/* Big Spinning Card Showcase */}
+        <section className="mb-14 sm:mb-20 flex flex-col items-center">
+          <style>{`
+    @keyframes spin-y-axis {
+      from { transform: rotateY(0deg); }
+      to { transform: rotateY(360deg); }
+    }
+  `}</style>
+
+          <h2
+            className="text-center text-2xl sm:text-3xl font-futura-heavy font-bold uppercase tracking-wide text-[#00F0FF]"
+            style={{ textShadow: "0 0 10px rgba(0,240,255,0.6)" }}
+          >
+            Your Elysium Card
+          </h2>
+          <p className="mt-2 text-center text-sm font-futura-book text-gray-300">
+            Hover to take a closer look.
+          </p>
+
+          <div
+            onMouseEnter={() => setShowcaseSpinning(false)}
+            onMouseLeave={() => setShowcaseSpinning(true)}
+            onClick={() => setShowcaseSpinning((s) => !s)}
+            className="mt-8 w-full max-w-md aspect-[1000/630] cursor-pointer [perspective:1600px]"
+          >
+            <div
+              className="relative h-full w-full rounded-2xl shadow-[0_0_40px_rgba(0,240,255,0.3)] [transform-style:preserve-3d]"
+              style={{
+                animation: "spin-y-axis 8s linear infinite",
+                animationPlayState: showcaseSpinning ? "running" : "paused",
+              }}
+            >
+              <img
+                src="/Front Template.jpg"
+                alt="Elysium TNG Card — Front"
+                className="absolute inset-0 h-full w-full rounded-2xl object-cover [backface-visibility:hidden]"
+              />
+              <img
+                src="/Back Template.jpg"
+                alt="Elysium TNG Card — Back"
+                className="absolute inset-0 h-full w-full rounded-2xl object-cover [backface-visibility:hidden]"
+                style={{ transform: "rotateY(180deg)" }}
+              />
+            </div>
+          </div>
         </section>
       </div>
     </div>
