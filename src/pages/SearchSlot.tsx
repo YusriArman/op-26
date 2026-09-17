@@ -189,8 +189,7 @@ function SearchSlot() {
                 /* Case 3: Promoted from waitlist, or otherwise bound without an assigned venue */
                 <div className="mt-5 rounded-xl border border-cyan-400/20 bg-[#160b38]/80 p-4">
                   <p className="text-sm text-gray-200">
-                    You've secured a pass! Please check your email or contact the organizing
-                    team for your ticket collection details.
+                    You've secured a ticket for the event already! See you at the event, registration starts from 5.15pm - 7.00pm!
                   </p>
                 </div>
               )}
