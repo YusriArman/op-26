@@ -222,7 +222,7 @@ function Queue() {
           <Header
             title="ELYSIUM: ORIENTATION PARTY 2026"
             description={EVENT_ENDED
-              ? "Thank you for making Elysium 2026 an unforgettable night!"
+              ? "Thank you for making Orientation Party 2026 Elysium: A Glitch in The Matrix an unforgettable night!"
               : "Welcome Freshmen! Secure your official entrance pass and choose your physical ticket collection timeslot for Taylor's Grand Hall (TGH) or Lecture Theatre 1 (LT1)"}
             align="center"
           />
@@ -243,7 +243,7 @@ function Queue() {
                 Thank You For Coming!
               </h2>
               <p className="mt-4 text-sm sm:text-base font-futura-book text-gray-200 leading-relaxed max-w-xl mx-auto">
-                Elysium: Orientation Party 2026 has officially wrapped. Thank you to every freshman who joined us — we hope you had an amazing night!
+                Orientation Party 2026 Elysium: A Glitch in The Matrix has officially wrapped. Thank you to every freshman who joined us — we hope you had an amazing night!
               </p>
             </section>
           ) : (
