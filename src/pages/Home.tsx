@@ -11,6 +11,8 @@ import type { Announcement } from '../types/announcement';
 // Make sure the hero video only plays once per session
 let heroHasPlayed = false;
 
+const EVENT_ENDED = true;
+
 function Queue() {
   // Video ref for programmatic mobile autoplay
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -219,7 +221,9 @@ function Queue() {
           {/* Header Section */}
           <Header
             title="ELYSIUM: ORIENTATION PARTY 2026"
-            description="Welcome Freshmen! Secure your official entrance pass and choose your physical ticket collection timeslot for Taylor's Grand Hall (TGH) or Lecture Theatre 1 (LT1)"
+            description={EVENT_ENDED
+              ? "Thank you for making Elysium 2026 an unforgettable night!"
+              : "Welcome Freshmen! Secure your official entrance pass and choose your physical ticket collection timeslot for Taylor's Grand Hall (TGH) or Lecture Theatre 1 (LT1)"}
             align="center"
           />
 
@@ -233,7 +237,17 @@ function Queue() {
           </div>
 
           {/* Progress Bars & Queue Section */}
-          <section className="space-y-6 max-w-3xl mx-auto">
+          {EVENT_ENDED ? (
+            <section className="max-w-3xl mx-auto text-center py-10">
+              <h2 className="text-2xl sm:text-3xl font-futura-heavy font-bold uppercase tracking-wide text-[#3cf6f7] drop-shadow-[0_0_12px_rgba(60,246,247,0.6)]">
+                Thank You For Coming!
+              </h2>
+              <p className="mt-4 text-sm sm:text-base font-futura-book text-gray-200 leading-relaxed max-w-xl mx-auto">
+                Elysium: Orientation Party 2026 has officially wrapped. Thank you to every freshman who joined us — we hope you had an amazing night!
+              </p>
+            </section>
+          ) : (
+            <section className="space-y-6 max-w-3xl mx-auto">
 
             {/* 1. Main Queue Progress Bar */}
             <div className="space-y-2 text-center">
@@ -311,6 +325,7 @@ function Queue() {
             </div>
 
           </section>
+          )}
 
           {/* Live Announcements Section (Optimized Padding) */}
           <section className="mt-14 sm:mt-16 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
@@ -424,6 +439,7 @@ function Queue() {
           </section>
 
           {/* HOW TICKET QUEUING WORKS? (Tech Container) */}
+          {!EVENT_ENDED && (
           <section className="mt-14 sm:mt-20 mb-14 sm:mb-20 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
             <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-6 sm:p-8">
               <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#3cf6f7]" />
@@ -486,6 +502,7 @@ function Queue() {
               </div>
             </div>
           </section>
+          )}
 
         </div>
 
