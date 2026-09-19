@@ -182,16 +182,14 @@ function SearchSlot() {
                 /* Case 2: Still on the waitlist, no slot assigned yet */
                 <div className="mt-5 rounded-xl border border-amber-400/20 bg-[#160b38]/80 p-4">
                   <p className="text-sm text-amber-300">
-                    You're currently on the waitlist. You'll be notified if a spot opens up —
-                    keep an eye on the announcements on the main page.
+                    You're currently on the waitlist. Waitlist ticket collection will be from 3.00pm - 6.30pm at the vendor booth in front of LT1 on the event day (18th September 2026).
                   </p>
                 </div>
               ) : (
                 /* Case 3: Promoted from waitlist, or otherwise bound without an assigned venue */
                 <div className="mt-5 rounded-xl border border-cyan-400/20 bg-[#160b38]/80 p-4">
                   <p className="text-sm text-gray-200">
-                    You've secured a pass! Please check your email or contact the organizing
-                    team for your ticket collection details.
+                    You've secured a ticket for the event already! See you at the event, registration starts from 5.15pm - 7.00pm!
                   </p>
                 </div>
               )}
