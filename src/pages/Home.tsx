@@ -11,7 +11,7 @@ import type { Announcement } from '../types/announcement';
 // Make sure the hero video only plays once per session
 let heroHasPlayed = false;
 
-const EVENT_ENDED = true;
+const EVENT_ENDED = false;
 
 function Queue() {
   // Video ref for programmatic mobile autoplay
@@ -249,82 +249,82 @@ function Queue() {
           ) : (
             <section className="space-y-6 max-w-3xl mx-auto">
 
-            {/* 1. Main Queue Progress Bar */}
-            <div className="space-y-2 text-center">
-              <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
-                Event Limit: {queueCount}/{maxTickets} Queuing
-              </div>
+              {/* 1. Main Queue Progress Bar */}
+              <div className="space-y-2 text-center">
+                <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
+                  Event Limit: {queueCount}/{maxTickets} Queuing
+                </div>
 
-              <div className="relative h-6 w-full rounded-full bg-white/15 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#6045f4] via-[#e139fa] to-[#3cf6f7] shadow-[0_0_18px_rgba(225,57,250,0.85)] transition-all duration-700 ease-out relative"
-                  style={{ width: `${Math.max(4, queuePct)}%` }}
-                >
-                  {/* Mascot riding the tip of the progress bar */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
-                    <img
-                      src="/rolby-loading.png"
-                      alt="Main Queue Mascot"
-                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(60,246,247,1)]"
-                    />
+                <div className="relative h-6 w-full rounded-full bg-white/15 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#6045f4] via-[#e139fa] to-[#3cf6f7] shadow-[0_0_18px_rgba(225,57,250,0.85)] transition-all duration-700 ease-out relative"
+                    style={{ width: `${Math.max(4, queuePct)}%` }}
+                  >
+                    {/* Mascot riding the tip of the progress bar */}
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
+                      <img
+                        src="/rolby-loading.png"
+                        alt="Main Queue Mascot"
+                        className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(60,246,247,1)]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* 2. Waiting List Progress Bar */}
-            <div className="space-y-2 text-center pt-2">
-              <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
-                Waiting List: {waitingCount}/{maxWaiting} Waiting
-              </div>
+              {/* 2. Waiting List Progress Bar */}
+              <div className="space-y-2 text-center pt-2">
+                <div className="text-xs sm:text-sm font-futura-medium font-semibold tracking-wider text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
+                  Waiting List: {waitingCount}/{maxWaiting} Waiting
+                </div>
 
-              <div className="relative h-6 w-full rounded-full bg-white/15 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-[#6045f4] via-[#e139fa] to-[#3cf6f7] shadow-[0_0_18px_rgba(225,57,250,0.85)] transition-all duration-700 ease-out relative"
-                  style={{ width: `${Math.max(4, waitingPct)}%` }}
-                >
-                  {/* Mascot riding the tip of the waitlist progress bar */}
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
-                    <img
-                      src="/rolby-loading.png"
-                      alt="Main Queue Mascot"
-                      className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(225,57,250,1)]"
-                    />
+                <div className="relative h-6 w-full rounded-full bg-white/15 p-1 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-white/10">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-[#6045f4] via-[#e139fa] to-[#3cf6f7] shadow-[0_0_18px_rgba(225,57,250,0.85)] transition-all duration-700 ease-out relative"
+                    style={{ width: `${Math.max(4, waitingPct)}%` }}
+                  >
+                    {/* Mascot riding the tip of the waitlist progress bar */}
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 pointer-events-none">
+                      <img
+                        src="/rolby-loading.png"
+                        alt="Main Queue Mascot"
+                        className="h-12 w-12 max-w-none object-contain drop-shadow-[0_0_12px_rgba(225,57,250,1)]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Side-by-Side Action Buttons */}
-            <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
+              {/* Side-by-Side Action Buttons */}
+              <div className="pt-4 flex flex-col sm:flex-row justify-center items-center gap-4">
 
-              {/* Button 1: Main Queue */}
-              <button
-                onClick={() => setShowQueueModal(true)}
-                disabled={!canQueue}
-                className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canQueue
-                  ? 'text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(60,246,247,0.9)] bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7] shadow-[0_0_20px_rgba(60,246,247,0.3)] cursor-pointer'
-                  : 'text-gray-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
-                  }`}
-              >
-                {queueButtonLabel}
-              </button>
+                {/* Button 1: Main Queue */}
+                <button
+                  onClick={() => setShowQueueModal(true)}
+                  disabled={!canQueue}
+                  className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canQueue
+                    ? 'text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(60,246,247,0.9)] bg-gradient-to-r from-[#6045f4] via-[#3cf6f7] to-[#e139fa] hover:brightness-110 hover:shadow-[0_0_25px_rgba(60,246,247,0.8)] border border-[#3cf6f7] shadow-[0_0_20px_rgba(60,246,247,0.3)] cursor-pointer'
+                    : 'text-gray-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
+                    }`}
+                >
+                  {queueButtonLabel}
+                </button>
 
-              {/* Button 2: Enter Waitlist */}
-              <button
-                onClick={() => setShowWaitlistModal(true)}
-                disabled={!canWaitlist}
-                className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canWaitlist
-                  ? 'text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(225,57,250,0.9)] bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa] shadow-[0_0_20px_rgba(225,57,250,0.3)] cursor-pointer'
-                  : 'text-gray-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
-                  }`}
-              >
-                {waitlistButtonLabel}
-              </button>
+                {/* Button 2: Enter Waitlist */}
+                <button
+                  onClick={() => setShowWaitlistModal(true)}
+                  disabled={!canWaitlist}
+                  className={`w-full sm:w-72 h-14 rounded-none px-6 font-futura-heavy font-bold uppercase tracking-wider text-xs sm:text-sm flex items-center justify-center text-center transition-all duration-300 ${canWaitlist
+                    ? 'text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.95),0_0_10px_rgba(225,57,250,0.9)] bg-gradient-to-r from-[#e139fa] via-[#6045f4] to-[#3cf6f7] hover:brightness-110 hover:shadow-[0_0_25px_rgba(225,57,250,0.8)] border border-[#e139fa] shadow-[0_0_20px_rgba(225,57,250,0.3)] cursor-pointer'
+                    : 'text-gray-400 [text-shadow:0_2px_4px_rgba(0,0,0,0.9)] bg-[#090520]/80 backdrop-blur-md border border-white/20 cursor-not-allowed shadow-none'
+                    }`}
+                >
+                  {waitlistButtonLabel}
+                </button>
 
-            </div>
+              </div>
 
-          </section>
+            </section>
           )}
 
           {/* Live Announcements Section (Optimized Padding) */}
@@ -440,68 +440,68 @@ function Queue() {
 
           {/* HOW TICKET QUEUING WORKS? (Tech Container) */}
           {!EVENT_ENDED && (
-          <section className="mt-14 sm:mt-20 mb-14 sm:mb-20 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
-            <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-6 sm:p-8">
-              <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#3cf6f7]" />
-              <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#3cf6f7]" />
-              <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#3cf6f7]" />
-              <div className="absolute bottom-0 right-0 h-3 w-3 border-b-2 border-r-2 border-[#3cf6f7]" />
+            <section className="mt-14 sm:mt-20 mb-14 sm:mb-20 rounded-none p-[1px] bg-gradient-to-r from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_25px_rgba(60,246,247,0.25)] relative">
+              <div className="w-full h-full bg-[#090520]/80 backdrop-blur-md p-6 sm:p-8">
+                <div className="absolute top-0 left-0 h-3 w-3 border-t-2 border-l-2 border-[#3cf6f7]" />
+                <div className="absolute top-0 right-0 h-3 w-3 border-t-2 border-r-2 border-[#3cf6f7]" />
+                <div className="absolute bottom-0 left-0 h-3 w-3 border-b-2 border-l-2 border-[#3cf6f7]" />
+                <div className="absolute bottom-0 right-0 h-3 w-3 border-b-2 border-r-2 border-[#3cf6f7]" />
 
-              <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.25em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
-                HOW TICKET QUEUING WORKS?
-              </h3>
-              <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                Follow these simple steps to ensure a smooth ticket collection process:
-              </p>
+                <h3 className="text-base sm:text-lg font-futura-heavy font-bold uppercase tracking-[0.25em] text-[#3cf6f7] drop-shadow-[0_0_8px_rgba(60,246,247,0.7)]">
+                  HOW TICKET QUEUING WORKS?
+                </h3>
+                <p className="mt-1 text-xs font-futura-book text-gray-200 tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                  Follow these simple steps to ensure a smooth ticket collection process:
+                </p>
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Step 1 */}
-                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
-                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
-                      1
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Step 1 */}
+                  <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
+                    <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
+                        1
+                      </div>
+                      <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
+                        REGISTER DETAILS
+                      </h4>
+                      <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                        Provide your Student ID (SID), Full Name, Taylor's Email, and Personal Email.
+                      </p>
                     </div>
-                    <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
-                      REGISTER DETAILS
-                    </h4>
-                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                      Provide your Student ID (SID), Full Name, Taylor's Email, and Personal Email.
-                    </p>
                   </div>
-                </div>
 
-                {/* Step 2 */}
-                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
-                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
-                      2
+                  {/* Step 2 */}
+                  <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
+                    <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
+                        2
+                      </div>
+                      <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
+                        SELECT COLLECTION SLOT
+                      </h4>
+                      <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                        Choose an available date and time slot for collection at Taylor's Grand Hall or Lecture Theatre 1.
+                      </p>
                     </div>
-                    <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
-                      SELECT COLLECTION SLOT
-                    </h4>
-                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                      Choose an available date and time slot for collection at Taylor's Grand Hall or Lecture Theatre 1.
-                    </p>
                   </div>
-                </div>
 
-                {/* Step 3 */}
-                <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
-                  <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
-                    <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
-                      3
+                  {/* Step 3 */}
+                  <div className="p-[1px] rounded-xl bg-gradient-to-br from-[#3cf6f7]/60 via-[#e139fa]/60 to-[#6045f4]/60 shadow-[0_0_15px_rgba(0,0,0,0.4)] transition duration-300 hover:from-[#3cf6f7] hover:to-[#6045f4]">
+                    <div className="rounded-[11px] bg-[#160b38]/90 backdrop-blur-sm p-4 h-full">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-[#6045f4] text-xs font-futura-heavy font-bold text-white mb-2 shadow-[0_0_8px_rgba(96,69,244,0.6)]">
+                        3
+                      </div>
+                      <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
+                        PHYSICAL COLLECTION
+                      </h4>
+                      <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+                        Bring your Student ID to the venue during your assigned slot to collect your physical pass.
+                      </p>
                     </div>
-                    <h4 className="text-sm font-futura-heavy font-bold text-[#3cf6f7] uppercase tracking-[0.15em]">
-                      PHYSICAL COLLECTION
-                    </h4>
-                    <p className="mt-1 text-xs font-futura-book text-gray-200 leading-relaxed drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-                      Bring your Student ID to the venue during your assigned slot to collect your physical pass.
-                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-          </section>
+            </section>
           )}
 
         </div>

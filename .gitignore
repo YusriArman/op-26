@@ -33,3 +33,5 @@ dist-ssr
 find-new-students.js
 test*-script.js
 test*.js
+.vercel
+.env*
